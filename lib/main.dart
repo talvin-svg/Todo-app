@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:newwer_todo/actions/actions.dart';
 import 'package:newwer_todo/reducers/reducer.dart';
+import 'package:newwer_todo/screens/welcome_screen.dart';
 import 'package:redux/redux.dart';
 import 'Appstate/appstate.dart';
 import 'components/my_button.dart';
@@ -20,19 +21,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreProvider<AppState>(
-        store: store,
-        child: MaterialApp(
-          title: 'Flutter Demo',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-          ),
-          home: StoreConnector<AppState, AppState>(
-            builder: (context, items) =>
-                const MyHomePage(title: 'Flutter Demo Home Page'),
-            converter: ((store) => store.state),
-          ),
-        ));
+    return MaterialApp(
+      routes: {'/welcomeScreen': (context) => WelcomeScreen()},
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    );
   }
 }
 
@@ -46,12 +42,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // List<String> list = [
-  //   'Build Flutter app',
-  //   'Get some milk',
-  //   'Tweet about progress'
-  // ];
-
   final _dialogController = TextEditingController();
 
   @override
@@ -79,61 +69,76 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            ListView.builder(
-                shrinkWrap: true,
-                itemCount: store.state.itemListState.length,
-                itemBuilder: ((context, index) {
-                  return Dismissible(
-                    background: Container(color: Colors.red),
-                    onDismissed: (direction) =>
-                        store.dispatch(RemoveAction(index: index)),
-                    key: PageStorageKey(store.state.itemListState[index]),
-                    child: TextCard(
-                      name: '${store.state.itemListState[index].title}',
-                      ontap: () {},
-                    ),
-                  );
-                }))
-          ],
+    return StoreProvider<AppState>(
+      store: store,
+      child: MaterialApp(
+        home: StoreConnector<AppState, _ViewModel>(
+          converter: ((store) => _ViewModel(context: context, store: store)),
+          builder: (BuildContext context, _ViewModel viewModel) => Scaffold(
+            appBar: AppBar(
+              title: Text(widget.title),
+            ),
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: store.state.itemListState.length,
+                      itemBuilder: ((context, index) {
+                        return Dismissible(
+                          background: Container(color: Colors.red),
+                          onDismissed: (direction) =>
+                              store.dispatch(RemoveAction(index: index)),
+                          key: PageStorageKey(store.state.itemListState[index]),
+                          child: TextCard(
+                            name: '${store.state.itemListState[index].title}',
+                            ontap: () {},
+                          ),
+                        );
+                      }))
+                ],
+              ),
+            ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Enter new Todo'),
+                        content: TextField(
+                          controller: _dialogController,
+                        ),
+                        actions: [
+                          MyButton(
+                              name: 'add',
+                              color: Colors.grey,
+                              ontap: () {
+                                setState(() {
+                                  addToList();
+                                  _dialogController.text = '';
+                                });
+                                Navigator.pop(context);
+                              }),
+                        ],
+                      );
+                    });
+              },
+              tooltip: 'add todo',
+              child: const Icon(Icons.add),
+            ),
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text('Enter new Todo'),
-                  content: TextField(
-                    controller: _dialogController,
-                  ),
-                  actions: [
-                    MyButton(
-                        name: 'add',
-                        color: Colors.grey,
-                        ontap: () {
-                          setState(() {
-                            addToList();
-                            _dialogController.text = '';
-                          });
-                          Navigator.pop(context);
-                        }),
-                  ],
-                );
-              });
-        },
-        tooltip: 'add todo',
-        child: const Icon(Icons.add),
       ),
     );
   }
+}
+
+class _ViewModel {
+  final BuildContext context;
+  final Store<AppState> store;
+
+  _ViewModel({required this.context, required this.store});
 }
