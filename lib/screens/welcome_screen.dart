@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:newwer_todo/components/apptextfield.dart';
+
+import '../components/app_text.dart';
 
 class WelcomeScreen extends StatelessWidget {
-  WelcomeScreen({super.key});
-
+  const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.dark(),
+      theme: ThemeData.light(),
       home: const SignUpPage(),
     );
   }
@@ -21,41 +23,36 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-    final _usernameController = TextEditingController();
-     final _passwordController = TextEditingController();
-      final _formKey = GlobalKey<FormState>();
+  bool showPassword = false;
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
+      // backgroundColor: Theme.of(context).backgroundColor,
       body: SafeArea(
         child: Column(
-          children:  [
-            const Text(
-              'Welcome To TODO APP',
-              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset('assets/todo-logo.png'),
+            const Expanded(
+              child: Text('The right app to get work done'),
             ),
-            Row(
-            
-              children:   [
-                Text('If this is your first time sign up to use free todo app'), 
-                GestureDetector(
-                  child: Text("sign in"),
-                  onTap: (() {}),
-                )
-              ],
-            ),
-            Expanded(child: Form(
+            Expanded(
+                child: Form(
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextFormField(
-                    controller: _usernameController,
-                  
-                  )
+                  const AppText(
+                    text: 'USERNAME',
+                  ),
+                  const SizedBox(height: 10),
+                  AppTextField(controller: _usernameController),
+                  AppTextField(controller: _passwordController)
                 ],
               ),
             ))
-
           ],
         ),
       ),

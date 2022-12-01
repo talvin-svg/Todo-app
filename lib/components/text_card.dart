@@ -10,14 +10,17 @@ class TextCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: ontap,
-      child: Center(
+      child: Expanded(
+        child: Center(
           child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Text(
-          name,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+            padding: const EdgeInsets.all(10.0),
+            child: Text(
+              name,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
         ),
-      )),
+      ),
     );
   }
 }
