@@ -35,6 +35,10 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_redux: ^0.10.0
   redux: ^5.0.0
+  iconsax: ^0.0.8
+  firebase_core: ^2.4.0
+  firebase_database: ^10.0.7
+  cloud_firestore: ^4.2.0
 
 dev_dependencies:
   flutter_test:
