@@ -17,3 +17,7 @@ Future createUser({
         context: context);
   });
 }
+
+void Signout() async {
+  await firebaseAuth.signOut();
+}

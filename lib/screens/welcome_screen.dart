@@ -7,7 +7,7 @@ import 'package:todo_new/components/constants.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
-
+  static const String id = 'welcome';
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -29,7 +29,7 @@ class WelcomeScreen extends StatelessWidget {
                 CustomButton(
                     title: 'SignUp',
                     ontap: () {
-                      Navigator.pushNamed(context, signUper);
+                      Navigator.pushNamed(context, SignUpPage.id);
                     },
                     color: Colors.blue)
               ],

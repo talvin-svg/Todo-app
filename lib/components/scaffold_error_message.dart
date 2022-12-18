@@ -8,6 +8,7 @@ void previewError({required String message, required BuildContext context}) {
       backgroundColor: Colors.transparent,
       content: Container(
         decoration: BoxDecoration(
+          color: Colors.red,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Padding(
@@ -16,7 +17,7 @@ void previewError({required String message, required BuildContext context}) {
             text: message,
             fontSize: 15,
             fontWeight: FontWeight.w500,
-            color: Colors.white,
+            color: Colors.black,
           ),
         ),
       ));
@@ -37,7 +38,7 @@ void previewSuccess({required String message, required BuildContext context}) {
             text: message,
             fontSize: 15,
             fontWeight: FontWeight.w500,
-            color: Colors.white,
+            color: Colors.black,
           ),
         ),
       ));

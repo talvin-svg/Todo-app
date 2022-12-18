@@ -1,5 +1,6 @@
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:todo_new/components/constants.dart';
+import 'package:todo_new/screens/signup.dart';
 import '/actions/actions.dart';
 import '/reducers/reducer.dart';
 import 'package:redux/redux.dart';
@@ -8,14 +9,16 @@ import '/components/my_button.dart';
 import '/model/model.dart';
 import '/components/text_card.dart';
 import 'package:flutter/material.dart';
+import 'package:todo_new/screens/welcome_screen.dart';
 
 final store =
     Store<AppState>(itemReducer, initialState: AppState(itemListState: []));
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+  static const String id = 'homy';
+  const MyHomePage({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -23,6 +26,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final _dialogController = TextEditingController();
+
+  void _navigateToSignUpPage() {
+    debugPrint("Navigating to SignUpPage...");
+    Navigator.pushNamed(context, SignUpPage.id);
+  }
 
   @override
   void initState() {
@@ -56,16 +64,18 @@ class _MyHomePageState extends State<MyHomePage> {
           converter: ((store) => _ViewModel(context: context, store: store)),
           builder: (BuildContext context, _ViewModel viewModel) => Scaffold(
             appBar: AppBar(
-              leading: GestureDetector(
-                  onTap: () {
-                    try {
-                      Navigator.pushNamed(context, signIner);
-                    } catch (e) {
-                      print(e);
-                    }
-                  },
-                  child: const Icon(Icons.abc)),
-              title: Text(widget.title),
+              leading: MyButton(
+                name: 'back',
+                color: Colors.teal,
+                ontap: () {
+                  try {
+                    _navigateToSignUpPage();
+                  } catch (e) {
+                    print(e);
+                  }
+                },
+              ),
+              title: Text('create todo'),
             ),
             body: Center(
               child: Column(
@@ -103,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         actions: [
                           MyButton(
                               name: 'add',
-                              color: Colors.grey,
+                              color: Colors.teal,
                               ontap: () {
                                 setState(() {
                                   addToList();
