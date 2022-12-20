@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
         MyHomePage.id: (context) => const MyHomePage(),
       },
       title: 'Flutter Demo',
-      home: const WelcomeScreen(),
+      home: const MyHomePage(),
     );
   }
 }

@@ -159,7 +159,7 @@ class _SignInPageState extends State<SignInPage> {
   void finishSignin() {
     Future.delayed(const Duration(seconds: 4), (() {
       (onSuccess)
-          ? Navigator.pushNamed(context, homey)
+          ? Navigator.pushNamed(context, MyHomePage.id)
           : previewError(
               message: 'Account could not be signed into at this time',
               context: context);

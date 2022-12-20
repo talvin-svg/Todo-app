@@ -1,5 +1,5 @@
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:todo_new/components/constants.dart';
+
 import 'package:todo_new/screens/signup.dart';
 import '/actions/actions.dart';
 import '/reducers/reducer.dart';
@@ -9,7 +9,6 @@ import '/components/my_button.dart';
 import '/model/model.dart';
 import '/components/text_card.dart';
 import 'package:flutter/material.dart';
-import 'package:todo_new/screens/welcome_screen.dart';
 
 final store =
     Store<AppState>(itemReducer, initialState: AppState(itemListState: []));
@@ -26,7 +25,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final _dialogController = TextEditingController();
-
+  var listName = store.state.itemListState;
   void _navigateToSignUpPage() {
     debugPrint("Navigating to SignUpPage...");
     Navigator.pushNamed(context, SignUpPage.id);
@@ -48,11 +47,11 @@ class _MyHomePageState extends State<MyHomePage> {
     if (enteredtitle.isEmpty) {
       return;
     }
-    print('before update, ${store.state.itemListState}');
+    print('before update, ${store.state.itemListState.length}');
     // list.add(x);
     store.dispatch(AddItemAction(item: Item(title: enteredtitle)));
 
-    print('after update,  ${store.state.itemListState}');
+    print('after update,  ${store.state.itemListState.last.title}');
   }
 
   @override
@@ -75,29 +74,43 @@ class _MyHomePageState extends State<MyHomePage> {
                   }
                 },
               ),
-              title: Text('create todo'),
+              title: const Text('create todo'),
             ),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: store.state.itemListState.length,
-                      itemBuilder: ((context, index) {
-                        return Dismissible(
+            body: SingleChildScrollView(
+              child: SizedBox(
+                height: 500,
+                child: ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: store.state.itemListState.length,
+                    itemBuilder: ((context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Dismissible(
+                          resizeDuration: const Duration(seconds: 1),
                           background: Container(color: Colors.red),
                           onDismissed: (direction) =>
                               store.dispatch(RemoveAction(index: index)),
                           key: PageStorageKey(store.state.itemListState[index]),
                           child: TextCard(
-                            name: '${store.state.itemListState[index].title}',
-                            ontap: () {},
+                            time: store
+                                    .state.itemListState[index].createdAt.year
+                                    .toString() +
+                                store.state.itemListState[index].createdAt.month
+                                    .toString(),
+                            todoName:
+                                '${store.state.itemListState[index].title}',
+                            icon: store.state.itemListState[index].done
+                                ? Icons.check_circle_outline_outlined
+                                : Icons.circle_outlined,
+                            ontapIcon: () {
+                              setState(() {});
+                              store.dispatch(ToggleItemSelection(index: index));
+                            },
                           ),
-                        );
-                      }))
-                ],
+                        ),
+                      );
+                    })),
               ),
             ),
             floatingActionButton: FloatingActionButton(

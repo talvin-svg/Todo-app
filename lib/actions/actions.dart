@@ -9,7 +9,7 @@ class RemoveAction {
 }
 
 class ToggleItemSelection {
-  dynamic item, index;
+  dynamic index;
 
-  ToggleItemSelection({this.index, this.item});
+  ToggleItemSelection({this.index});
 }

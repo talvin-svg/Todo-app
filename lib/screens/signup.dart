@@ -2,15 +2,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:todo_new/components/constants.dart';
+
 import 'package:todo_new/components/scaffold_error_message.dart';
 import 'package:todo_new/screens/homepage.dart';
 import 'package:todo_new/screens/signin.dart';
+import 'package:todo_new/screens/welcome_screen.dart';
 import '../components/custom_button.dart';
 import '../components/text_field_validator.dart';
 import '/components/app_text_input_field.dart';
 import '../components/app_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -26,8 +27,9 @@ class _SignUpPageState extends State<SignUpPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final CollectionReference users =
+      FirebaseFirestore.instance.collection('users');
 
   void pushToSigner() {
     Navigator.pushNamed(context, SignInPage.id);
@@ -52,8 +54,15 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
     try {
-      result = await firebaseAuth.createUserWithEmailAndPassword(
-          email: email, password: password);
+      result = await _auth
+          .createUserWithEmailAndPassword(email: email, password: password)
+          .then((userCredentials) {
+        users.add({
+          'auth_id': userCredentials.user?.uid,
+          'email': userCredentials.user?.email,
+        });
+        return userCredentials;
+      });
 
       setState(() {
         onSuccess = true;
@@ -74,7 +83,7 @@ class _SignUpPageState extends State<SignUpPage> {
         leading: CustomButton(
           color: Colors.teal,
           title: 'back',
-          ontap: () => Navigator.pop(context),
+          ontap: () => Navigator.popAndPushNamed(context, WelcomeScreen.id),
         ),
       ),
       body: SafeArea(

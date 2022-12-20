@@ -14,6 +14,7 @@ class MyWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: (Container(
+        decoration: BoxDecoration(),
         height: 50.0,
         // decoration: BoxDecoration(border: Border.all(color: Colors.black)),
         child: Center(
