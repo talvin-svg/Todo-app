@@ -24,7 +24,7 @@ import '../model/model.dart';
 //   return state.copyWith(state.itemListState);
 // }
 
-AppState toogleItemSelectionReducer(
+AppState toggleItemSelectionReducer(
     AppState state, ToggleItemSelection action) {
   // Create a copy of the list
   Item modifiedItem = state.itemListState
@@ -46,8 +46,20 @@ AppState removeItemReducer(AppState state, RemoveAction action) {
   return state.copyWith(state.itemListState);
 }
 
+AppState editItemReducer(AppState state, EditItemAction action) {
+  Item modifiedItem = state.itemListState.elementAt(action.index);
+  modifiedItem.title = action.name;
+  if (modifiedItem.done == true) {
+    modifiedItem.done = false;
+  }
+  state.itemListState
+      .replaceRange(action.index, action.index + 1, [modifiedItem]);
+  return state.copyWith(state.itemListState);
+}
+
 final itemReducer = combineReducers<AppState>([
   TypedReducer<AppState, AddItemAction>(addItemReducer),
   TypedReducer<AppState, RemoveAction>(removeItemReducer),
-  TypedReducer<AppState, ToggleItemSelection>(toogleItemSelectionReducer)
+  TypedReducer<AppState, ToggleItemSelection>(toggleItemSelectionReducer),
+  TypedReducer<AppState, EditItemAction>(editItemReducer),
 ]);

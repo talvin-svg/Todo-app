@@ -30,6 +30,7 @@ void previewSuccess({required String message, required BuildContext context}) {
       backgroundColor: Colors.transparent,
       content: Container(
         decoration: BoxDecoration(
+          color: Colors.green,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Padding(
