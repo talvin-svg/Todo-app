@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/gestures.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:todo_new/components/app_text.dart';
 import 'package:todo_new/components/custom_button.dart';
 import 'package:todo_new/components/scaffold_error_message.dart';
+import 'package:todo_new/components/todo_manager.dart';
 
 import 'package:todo_new/screens/signup.dart';
 import '../components/dismissed_container.dart';
@@ -34,7 +36,8 @@ class _MyHomePageState extends State<MyHomePage> {
   late bool result;
   final _dialogController = TextEditingController();
   final _dialogOnConfirmController = TextEditingController();
-  var listName = store.state.itemListState;
+  final CollectionReference users =
+      FirebaseFirestore.instance.collection('users');
   void _navigateToSignUpPage() {
     debugPrint("Navigating to SignUpPage...");
     Navigator.pushNamed(context, SignUpPage.id);
@@ -92,60 +95,83 @@ class _MyHomePageState extends State<MyHomePage> {
               title: const Text('create todo'),
             ),
             body: SingleChildScrollView(
-              child: SizedBox(
-                height: 500,
-                child: ListView.builder(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: viewModel.store.state.itemListState.length,
-                  itemBuilder: ((context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Dismissible(
-                        // direction: DismissDirection.endToStart,
-                        resizeDuration: const Duration(seconds: 1),
-                        direction: DismissDirection.endToStart,
-                        background: const CustomDismissedContainer(
-                            isDelete: true,
-                            color: Colors.red,
-                            icon: Icons.delete),
-                        onDismissed: (direction) {
-                          viewModel.store.dispatch(RemoveAction(index: index));
-                          previewSuccess(
-                              message: 'todo item deleted', context: context);
-                        },
-                        key: PageStorageKey(
-                            viewModel.store.state.itemListState[index]),
-                        child: TextCard(
-                          iconSecondary: Icons.edit,
-                          ontapIconSecondary: () {
-                            editDialog(context, index);
-                          },
-                          time: viewModel.store.state.itemListState[index]
-                                  .createdAt.year
-                                  .toString() +
-                              viewModel.store.state.itemListState[index]
-                                  .createdAt.month
-                                  .toString(),
-                          todoName:
-                              '${viewModel.store.state.itemListState[index].title}',
-                          icon: viewModel.store.state.itemListState[index].done
-                              ? Icons.check_circle_outline_outlined
-                              : Icons.circle_outlined,
-                          ontapIcon: () {
-                            setState(() {});
-                            store.dispatch(ToggleItemSelection(index: index));
-                          },
-                          color:
-                              viewModel.store.state.itemListState[index].done ==
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 500,
+                    child: ListView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: viewModel.store.state.itemListState.length,
+                      itemBuilder: ((context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Dismissible(
+                            // direction: DismissDirection.endToStart,
+                            resizeDuration: const Duration(seconds: 1),
+                            direction: DismissDirection.endToStart,
+                            background: const CustomDismissedContainer(
+                                isDelete: true,
+                                color: Colors.red,
+                                icon: Icons.delete),
+                            onDismissed: (direction) {
+                              viewModel.store
+                                  .dispatch(RemoveAction(index: index));
+                              previewSuccess(
+                                  message: 'todo item deleted',
+                                  context: context);
+                            },
+                            key: PageStorageKey(
+                                viewModel.store.state.itemListState[index]),
+                            child: TextCard(
+                              iconSecondary: Icons.edit,
+                              ontapIconSecondary: () {
+                                editDialog(context, index);
+                              },
+                              time: viewModel.store.state.itemListState[index]
+                                      .createdAt.year
+                                      .toString() +
+                                  viewModel.store.state.itemListState[index]
+                                      .createdAt.month
+                                      .toString(),
+                              todoName:
+                                  '${viewModel.store.state.itemListState[index].title}',
+                              icon: viewModel
+                                      .store.state.itemListState[index].done
+                                  ? Icons.check_circle_outline_outlined
+                                  : Icons.circle_outlined,
+                              ontapIcon: () {
+                                setState(() {});
+                                store.dispatch(
+                                    ToggleItemSelection(index: index));
+                                (viewModel.store.state.itemListState[index]
+                                            .done ==
+                                        true)
+                                    ? TodoManager.completedCounter++
+                                    : TodoManager.completedCounter--;
+                              },
+                              color: viewModel.store.state.itemListState[index]
+                                          .done ==
                                       false
                                   ? Colors.red
                                   : Colors.green,
-                        ),
-                      ),
-                    );
-                  }),
-                ),
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  TodoManager(
+                    color: Colors.green,
+                    title: 'Completed',
+                    icon: Icons.price_check_outlined,
+                    isCompleted: true,
+                  )
+                ],
               ),
             ),
             floatingActionButton: FloatingActionButton(

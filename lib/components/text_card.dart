@@ -39,15 +39,18 @@ class TextCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                AppText(
-                  text: todoName,
-                  fontSize: 17,
-                  fontWeight: FontWeight.w300,
-                  color: Colors.black,
+                Expanded(
+                  flex: 2,
+                  child: AppText(
+                    text: todoName,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w300,
+                    color: Colors.black,
+                  ),
                 ),
-                const SizedBox(width: 200),
+                // const SizedBox(width: 200),
                 GestureDetector(
                   onTap: ontapIcon,
                   child: Icon(icon),
@@ -56,6 +59,7 @@ class TextCard extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 AppText(
                   text: time,
@@ -63,7 +67,7 @@ class TextCard extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                   color: Colors.blue,
                 ),
-                const SizedBox(width: 200),
+                // const SizedBox(width: 200),
                 GestureDetector(
                   onTap: ontapIconSecondary,
                   child: Icon(iconSecondary),
