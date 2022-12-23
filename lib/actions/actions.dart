@@ -9,7 +9,13 @@ class RemoveAction {
 }
 
 class ToggleItemSelection {
-  dynamic item, index;
+  dynamic index;
 
-  ToggleItemSelection({this.index, this.item});
+  ToggleItemSelection({required this.index});
+}
+
+class EditItemAction {
+  dynamic index, name;
+
+  EditItemAction({required this.index, required this.name});
 }

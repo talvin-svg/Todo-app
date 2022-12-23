@@ -13,7 +13,8 @@ class MyWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      child: (SizedBox(
+      child: (Container(
+        decoration: BoxDecoration(),
         height: 50.0,
         // decoration: BoxDecoration(border: Border.all(color: Colors.black)),
         child: Center(
