@@ -68,7 +68,6 @@ class _MyHomePageState extends State<MyHomePage> {
     print('before update, ${store.state.itemListState.length}');
     // list.add(x);
     store.dispatch(AddItemAction(item: Item(title: enteredtitle)));
-    TodoManager.notCompletedCounter++;
 
     print('after update,  ${store.state.itemListState.last.title}');
   }
@@ -152,11 +151,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                         true)
                                     ? TodoManager.completedCounter++
                                     : TodoManager.completedCounter--;
-                                (viewModel.store.state.itemListState[index]
-                                            .done ==
-                                        false)
-                                    ? TodoManager.notCompletedCounter++
-                                    : TodoManager.notCompletedCounter--;
                               },
                               color: viewModel.store.state.itemListState[index]
                                           .done ==
@@ -173,17 +167,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: 30,
                   ),
                   TodoManager(
-                    text: '${TodoManager.completedCounter}',
                     color: Colors.green,
                     title: 'Completed',
                     icon: Icons.price_check_outlined,
-                    isCompleted: true,
-                  ),
-                  TodoManager(
-                    text: '${TodoManager.notCompletedCounter}',
-                    color: Colors.red,
-                    title: 'In Progress',
-                    icon: Icons.hourglass_bottom,
                     isCompleted: true,
                   )
                 ],

@@ -9,7 +9,6 @@ class TodoManager extends StatefulWidget {
     this.ontap,
     required this.isCompleted,
     required this.icon,
-    required this.text,
   });
   final Color color;
 
@@ -19,7 +18,6 @@ class TodoManager extends StatefulWidget {
   final void Function()? ontap;
   final IconData icon;
   final bool isCompleted;
-  final String text;
 
   static set completedCounterCheck(int value) => completedCounter = value;
   static set notCompletedCounterCheck(int value) => notCompletedCounter = value;
@@ -58,7 +56,7 @@ class _TodoManagerState extends State<TodoManager> {
                     ],
                   ),
                   AppText(
-                    text: widget.text,
+                    text: '${TodoManager.completedCounter}',
                     fontSize: 25,
                     fontWeight: FontWeight.w600,
                   ),
