@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:todo_new/components/constants.dart';
 import '/components/custom_button.dart';
 import '/screens/signup.dart';
 import '../components/app_text.dart';
-import 'package:todo_new/components/constants.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
