@@ -4,6 +4,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:todo_new/components/constants.dart';
 
 import 'package:todo_new/components/scaffold_error_message.dart';
+import 'package:todo_new/components/user_management.dart';
 import 'package:todo_new/screens/homepage.dart';
 import 'package:todo_new/screens/signin.dart';
 import 'package:todo_new/screens/welcome_screen.dart';
@@ -29,10 +30,16 @@ class _SignUpPageState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final CollectionReference users =
-      FirebaseFirestore.instance.collection('users');
+      FirebaseFirestore.instance.collection('newUsers');
 
   void pushToSigner() {
     Navigator.pushNamed(context, SignInPage.id);
+  }
+
+  @override
+  void initState() {
+    print('${FirebaseAuth.instance.currentUser?.uid}');
+    super.initState();
   }
 
   void makeUser() {
@@ -40,7 +47,10 @@ class _SignUpPageState extends State<SignUpPage> {
 
     Future.delayed(const Duration(seconds: 4), (() {
       (onSuccess)
-          ? Navigator.pushNamed(context, MyHomePage.id)
+          // ? Navigator.pushNamed(context, MyHomePage.id)
+          ? Navigator.of(context).pushNamed(
+              MyHomePage.id,
+            )
           : previewError(
               message: 'Account could not be created at this time',
               context: context);
@@ -57,17 +67,14 @@ class _SignUpPageState extends State<SignUpPage> {
       result = await _auth
           .createUserWithEmailAndPassword(email: email, password: password)
           .then((userCredentials) {
-        users.add({
-          'auth_id': userCredentials.user?.uid,
-          'email': userCredentials.user?.email,
+        setState(() {
+          onSuccess = true;
         });
+        previewSuccess(
+            message: 'Account Succesfully created', context: context);
+        UserManagement().storeNewUser(userCredentials.user, context);
         return userCredentials;
       });
-
-      setState(() {
-        onSuccess = true;
-      });
-      previewSuccess(message: 'Account Succesfully created', context: context);
 
       return;
     } catch (e) {

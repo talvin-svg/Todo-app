@@ -13,23 +13,6 @@ import 'Appstate/appstate.dart';
 import 'async_actions.dart';
 
 Future<void> main() async {
-//   Future<AppState> getAppStateFromFirestore() async {
-//     UserCredential User = await _signIn();
-//   DocumentSnapshot snapshot = await FirebaseFirestore.instance
-//   .collection('todos')
-//   .doc('userId')
-//   .get();
-
-//   if(!snapshot.exists){
-//     return AppState.intial();
-//   }
-
-//   Map<String , dynamic>? data = snapshot.data as Map<String , dynamic>?;
-
-//   AppState appState = AppState.fromMap(data);
-//   return appState;
-// }
-
   final store = Store<AppState>(itemReducer, initialState: AppState.initial());
 
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,6 +30,7 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
+  static dynamic uid;
   const MyApp({
     Key? key,
     required this.store,
@@ -56,30 +40,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, _ViewModel>(
-      converter: ((store) => _ViewModel(context: context, store: store)),
-      builder: ((BuildContext context, _ViewModel viewModel) => MaterialApp(
-            onUnknownRoute: (settings) => MaterialPageRoute(
-                settings: settings,
-                builder: (context) => const WelcomeScreen()),
-            routes: {
-              WelcomeScreen.id: (context) => const WelcomeScreen(),
-              SignUpPage.id: (context) => const SignUpPage(),
-              SignInPage.id: (context) => const SignInPage(),
-              MyHomePage.id: (context) => MyHomePage(store: store),
-            },
-            title: 'Flutter Demo',
-            home: MyHomePage(
+    return MaterialApp(
+      onUnknownRoute: (settings) => MaterialPageRoute(
+          settings: settings, builder: (context) => const WelcomeScreen()),
+      routes: {
+        WelcomeScreen.id: (context) => const WelcomeScreen(),
+        SignUpPage.id: (context) => const SignUpPage(),
+        SignInPage.id: (context) => const SignInPage(),
+        MyHomePage.id: (context) => MyHomePage(
               store: store,
-            ),
-          )),
+            )
+      },
+      title: 'Flutter Demo',
+      home: const WelcomeScreen(),
     );
   }
-}
-
-class _ViewModel {
-  final BuildContext context;
-  final Store<AppState> store;
-
-  _ViewModel({required this.context, required this.store});
 }

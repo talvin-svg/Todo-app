@@ -30,44 +30,6 @@ class _SignInPageState extends State<SignInPage> {
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  // void loginUser(String email, String password) async {
-  //   if (!isLoginFieldsValid(_emailController, _passwordController)) {
-  //     previewError(
-  //         context: context, message: 'Fields not filled in correctly!');
-  //     return;
-  //   }
-  //   await signOut();
-  //   try {
-  //     result = await firebaseAuth.signInWithEmailAndPassword(
-  //         email: email, password: password);
-  //     String user = result.user!.uid;
-
-  //     setState(() {
-  //       onSuccess = true;
-  //     });
-  //     previewSuccess(
-  //         message: 'Welcome Back!, Lets get to work', context: context);
-
-  //     Future.delayed(const Duration(seconds: 4), (() {
-  //       (onSuccess)
-  //           ? Navigator.pushNamed(context, MyHomePage.id)
-  //           : previewError(
-  //               message: 'Account could not be created at this time',
-  //               context: context);
-  //     }));
-  //     return;
-  //   } catch (e) {
-  //     print(e.toString());
-  //     return;
-  //   }
-  // }
-
-  Future<UserCredential> _signIn(
-      String email, String password, BuildContext context) async {
-    UserCredential user = await signIn(email, password, context);
-    return user;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -126,7 +88,7 @@ class _SignInPageState extends State<SignInPage> {
                     CustomButton(
                         title: "Sign In",
                         ontap: () {
-                          _signIn(_emailController.text,
+                          signIn(_emailController.text,
                               _passwordController.text, context);
                         },
                         color: Colors.blue),
@@ -161,7 +123,7 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   void routeToSignup() {
-    if (onSuccess) Navigator.pushNamed(context, SignUpPage.id);
+    Navigator.pushNamed(context, SignUpPage.id);
   }
 
   void finishSignin() {

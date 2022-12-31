@@ -24,6 +24,10 @@ import '../model/model.dart';
 //   return state.copyWith(state.itemListState);
 // }
 
+AppState updateStateReducer(AppState state, UpdateStateAction action) {
+  return action.newState;
+}
+
 AppState toggleItemSelectionReducer(
     AppState state, ToggleItemSelection action) {
   // Create a copy of the list
@@ -39,6 +43,10 @@ AppState toggleItemSelectionReducer(
 
 AppState addItemReducer(AppState state, AddItemAction action) {
   return state.copyWith([...state.itemListState, action.item]);
+}
+
+AppState addAllItemReducer(AppState state, AddAllItemAction action) {
+  return state.copyWith([...state.itemListState, ...action.items]);
 }
 
 AppState removeItemReducer(AppState state, RemoveAction action) {
@@ -62,4 +70,6 @@ final itemReducer = combineReducers<AppState>([
   TypedReducer<AppState, RemoveAction>(removeItemReducer),
   TypedReducer<AppState, ToggleItemSelection>(toggleItemSelectionReducer),
   TypedReducer<AppState, EditItemAction>(editItemReducer),
+  TypedReducer<AppState, UpdateStateAction>(updateStateReducer),
+  TypedReducer<AppState, AddAllItemAction>(addAllItemReducer),
 ]);

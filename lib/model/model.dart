@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Item {
   String? title;
   bool done = false;
@@ -9,5 +11,14 @@ class Item {
     return Item(
       title: data!['title'],
     );
+  }
+  @override
+  Map<String, dynamic> toMap() {
+    return {'title': title, 'done': false, 'createdAt': DateTime.now()};
+  }
+
+  factory Item.fromSnapshot(DocumentSnapshot? snapshot) {
+    Map<String, dynamic> data = snapshot?.data() as Map<String, dynamic>;
+    return Item(title: data['title'] as String);
   }
 }

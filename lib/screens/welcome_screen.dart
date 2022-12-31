@@ -25,7 +25,7 @@ class WelcomeScreen extends StatelessWidget {
                   height: 15,
                 ),
                 CustomButton(
-                    title: 'SignUp',
+                    title: 'Get Started',
                     ontap: () {
                       Navigator.pushNamed(context, SignUpPage.id);
                     },
