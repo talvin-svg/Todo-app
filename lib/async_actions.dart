@@ -70,8 +70,11 @@ Future<void> signOut() async {
 }
 
 Future signIn(String email, String password, BuildContext context) async {
-  late bool onSuccess;
-  if (!isLoginFieldsValid(TextEditingController(), TextEditingController())) {
+  bool onSuccess = false;
+  if (!isLoginFieldsValid(
+    email,
+    password,
+  )) {
     previewError(context: context, message: 'Fields not filled in correctly!');
     return;
   }
