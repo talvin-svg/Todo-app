@@ -6,6 +6,7 @@ import 'package:todo_new/components/constants.dart';
 import 'package:todo_new/components/scaffold_error_message.dart';
 import 'package:todo_new/components/user_management.dart';
 import 'package:todo_new/screens/homepage.dart';
+import 'package:todo_new/screens/homepage_revamped.dart';
 import 'package:todo_new/screens/signin.dart';
 import 'package:todo_new/screens/welcome_screen.dart';
 import '../components/custom_button.dart';
@@ -49,7 +50,7 @@ class _SignUpPageState extends State<SignUpPage> {
       (onSuccess)
           // ? Navigator.pushNamed(context, MyHomePage.id)
           ? Navigator.of(context).pushNamed(
-              MyHomePage.id,
+              HompePageToo.id,
             )
           : previewError(
               message: 'Account could not be created at this time',

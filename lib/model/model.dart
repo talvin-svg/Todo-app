@@ -1,6 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
 class Item {
   String? title;
   String? id;
@@ -10,6 +7,7 @@ class Item {
   Item({
     required this.title,
     this.id,
+    bool? done,
   });
 
   factory Item.fromMap(Map<String, dynamic>? data) {
@@ -27,8 +25,15 @@ class Item {
     };
   }
 
-  // factory Item.fromSnapshot(DocumentSnapshot? snapshot) {
-  //   Map<String, dynamic> data = snapshot?.data() as Map<String, dynamic>;
-  //   return Item(title: data['title'] as String);
-  // }
+  Item copyWith({
+    String? title,
+    String? id,
+    bool? done,
+  }) {
+    return Item(
+      title: title ?? this.title,
+      id: id ?? this.id,
+      done: done ?? this.done,
+    );
+  }
 }

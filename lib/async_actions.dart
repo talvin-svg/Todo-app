@@ -54,7 +54,7 @@
 // }
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:todo_new/screens/homepage.dart';
+import 'package:todo_new/screens/homepage_revamped.dart';
 
 import 'components/scaffold_error_message.dart';
 import 'components/text_field_validator.dart';
@@ -89,7 +89,7 @@ Future signIn(String email, String password, BuildContext context) async {
 
     Future.delayed(const Duration(seconds: 4), (() {
       (onSuccess)
-          ? Navigator.pushNamed(context, MyHomePage.id)
+          ? Navigator.pushNamed(context, HompePageToo.id)
           : previewError(
               message: 'Account could not be created at this time',
               context: context);
