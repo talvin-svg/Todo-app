@@ -5,6 +5,7 @@ import 'package:todo_new/Appstate/appstate.dart';
 import 'package:todo_new/actions/actions.dart';
 import 'package:todo_new/components/constants.dart';
 import 'package:todo_new/components/custom_button.dart';
+import 'package:todo_new/components/dismissed_container.dart';
 import 'package:todo_new/components/scaffold_error_message.dart';
 import 'package:todo_new/model/model.dart';
 import 'package:todo_new/screens/todo_review.dart';
@@ -23,6 +24,7 @@ class HompePageToo extends StatefulWidget {
 
 class _HompePageTooState extends State<HompePageToo> {
   final controller = TextEditingController();
+  final dialogController = TextEditingController();
 
   @override
   void initState() {
@@ -89,26 +91,43 @@ class _HompePageTooState extends State<HompePageToo> {
                       itemCount: vm.store.state.itemListState.length,
                       itemBuilder: ((context, index) {
                         final item =
-                            vm.store.state.itemListState.elementAt(index);
+                            // vm.store.state.itemListState.elementAt(index);
+                            vm.itemList.elementAt(index);
 
                         return Padding(
                           padding: const EdgeInsets.all(10.0),
-                          child: TextCard(
-                              time: item.done.toString(),
-                              todoName: item.title,
-                              icon: Icons.delete,
-                              ontapIcon: () {
-                                vm.store.dispatch(RemoveAction(index: index));
-                              },
-                              iconSecondary: Icons.check,
-                              ontapIconSecondary: () {
-                                vm.store.dispatch(
-                                    ToggleItemSelection(index: index));
-                                print(item.done.toString());
-                              },
-                              color: item.done == false
-                                  ? Colors.red
-                                  : Colors.green),
+                          child: Dismissible(
+                            confirmDismiss: (direction) async {
+                              return (item.done == true);
+                            },
+                            direction: DismissDirection.endToStart,
+                            resizeDuration: const Duration(seconds: 1),
+                            background: const CustomDismissedContainer(
+                                color: Colors.red,
+                                icon: Icons.delete,
+                                isDelete: true),
+                            onDismissed: (direction) {
+                              vm.store.dispatch(RemoveAction(index: index));
+                            },
+                            key: PageStorageKey(item),
+                            child: TextCard(
+                                time: item.done.toString(),
+                                todoName: item.title,
+                                icon: Icons.info,
+                                ontapIcon: () {
+                                  // vm.store.dispatch(RemoveAction(index: index));
+                                  editor(context, vm.store, index);
+                                },
+                                iconSecondary: Icons.check,
+                                ontapIconSecondary: () {
+                                  vm.store.dispatch(
+                                      ToggleItemSelection(index: index));
+                                  print(item.done.toString());
+                                },
+                                color: item.done == false
+                                    ? Colors.red
+                                    : Colors.green),
+                          ),
                         );
                       })))
             ],
@@ -116,6 +135,42 @@ class _HompePageTooState extends State<HompePageToo> {
         },
       ),
     );
+  }
+
+  Future<dynamic> editor(
+      BuildContext context, Store<AppState> store, int index) {
+    return showDialog(
+        context: context,
+        builder: ((context) {
+          return AlertDialog(
+            title: const AppText(text: 'Edit Todo'),
+            content: TextField(
+              controller: dialogController,
+            ),
+            actions: [
+              CustomButton(
+                  title: 'Cancel',
+                  ontap: () => Navigator.pop(context),
+                  color: Colors.red),
+              CustomButton(
+                  title: 'Update',
+                  ontap: () async {
+                    String entry = dialogController.text;
+                    if (entry.isEmpty) {
+                      return;
+                    } else {
+                      store.dispatch(EditItemAction(index: index, name: entry));
+                      print(store.state.itemListState[index].title);
+                      setState(() {
+                        dialogController.text = '';
+                      });
+                      Navigator.pop(context);
+                    }
+                  },
+                  color: Colors.green)
+            ],
+          );
+        }));
   }
 }
 

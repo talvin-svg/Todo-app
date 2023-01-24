@@ -18,10 +18,31 @@ List<Item> removeItemReducer(List<Item> previousItems, RemoveAction action) {
 
 List<Item> toggleItemSelectionReducer(
     List<Item> previousItems, ToggleItemSelection action) {
-List<Item> updateItemInList(List<Item> items, int index) {
-    return items.map((item) => item.index == index ? item.copyWith(isSelected: newValue) : item).toList();
+  Item modifiedItem = previousItems.elementAt(action.index);
+  modifiedItem.done = !modifiedItem.done;
+  previousItems.replaceRange(action.index, action.index + 1, [modifiedItem]);
+  return previousItems;
 }
+
+List<Item> editItemReducer(List<Item> previousItems, EditItemAction action) {
+  Item modifiedItem = previousItems.elementAt(action.index);
+  modifiedItem.title = action.name;
+  previousItems.replaceRange(action.index, action.index + 1, [modifiedItem]);
+  return previousItems;
 }
+
+// AppState toggleItemSelectionReducer(
+//     AppState state, ToggleItemSelection action) {
+//   // Create a copy of the list
+//   Item modifiedItem = state.itemListState
+//       .elementAt(action.index); // Retrieve the element at the specified index
+//   modifiedItem.done = !modifiedItem.done; // Toggle the done property
+//   state.itemListState.replaceRange(action.index, action.index + 1, [
+//     modifiedItem
+//   ]); // Replace the element in the list with the modified element
+//   return state.copyWith(state
+//       .itemListState); // Return a copy of the current state with the updated list of items
+// }
 
 ItemFilter itemFilterReducer(AppState state, action) {
   if (action is ChangeFilterAction) {
@@ -34,7 +55,8 @@ ItemFilter itemFilterReducer(AppState state, action) {
 Reducer<List<Item>> itemsReducer = combineReducers<List<Item>>([
   TypedReducer<List<Item>, AddItemAction>(addItemReducer),
   TypedReducer<List<Item>, RemoveAction>(removeItemReducer),
-  TypedReducer<List<Item>, ToggleItemSelection>(toggleItemSelectionReducer)
+  TypedReducer<List<Item>, ToggleItemSelection>(toggleItemSelectionReducer),
+  TypedReducer<List<Item>, EditItemAction>(editItemReducer),
 ]);
 
 AppState appStateReducer(AppState oldState, action) => AppState(
