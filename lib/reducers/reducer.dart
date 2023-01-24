@@ -31,19 +31,6 @@ List<Item> editItemReducer(List<Item> previousItems, EditItemAction action) {
   return previousItems;
 }
 
-// AppState toggleItemSelectionReducer(
-//     AppState state, ToggleItemSelection action) {
-//   // Create a copy of the list
-//   Item modifiedItem = state.itemListState
-//       .elementAt(action.index); // Retrieve the element at the specified index
-//   modifiedItem.done = !modifiedItem.done; // Toggle the done property
-//   state.itemListState.replaceRange(action.index, action.index + 1, [
-//     modifiedItem
-//   ]); // Replace the element in the list with the modified element
-//   return state.copyWith(state
-//       .itemListState); // Return a copy of the current state with the updated list of items
-// }
-
 ItemFilter itemFilterReducer(AppState state, action) {
   if (action is ChangeFilterAction) {
     return action.filter;
@@ -62,62 +49,3 @@ Reducer<List<Item>> itemsReducer = combineReducers<List<Item>>([
 AppState appStateReducer(AppState oldState, action) => AppState(
     itemListState: itemsReducer(oldState.itemListState, action),
     filter: itemFilterReducer(oldState, action));
-
-// OLD Iteration of code below !!
-
-// final itemReducer = combineReducers<AppState>([
-//   TypedReducer<AppState, AddItemAction>(addItemReducer),
-//   TypedReducer<AppState, RemoveAction>(removeItemReducer),
-//   // TypedReducer<AppState, ToggleItemSelection>(toggleItemSelectionReducer),
-//   // TypedReducer<AppState, EditItemAction>(editItemReducer),
-//   // TypedReducer<AppState, UpdateStateAction>(updateStateReducer),
-//   TypedReducer<AppState, AddAllItemAction>(addAllItemReducer),
-// ]);
-
-// AppState editItemReducer(AppState state, EditItemAction action) {
-//   Item modifiedItem = state.itemListState.elementAt(action.index);
-//   modifiedItem.title = action.name;
-//   if (modifiedItem.done == true) {
-//     modifiedItem.done = false;
-//   }
-//   state.itemListState
-//       .replaceRange(action.index, action.index + 1, [modifiedItem]);
-//   return state.copyWith(state.itemListState);
-// }
-
-// AppState reducer(AppState state, dynamic action) {
-//   if (action is AddItemAction) {
-//     print('add item action');
-
-//     // var itemListState = <Item>[];
-//     return state.copyWith([...state.itemListState, action.item]);
-//   } else if (action is RemoveAction) {
-//     print('remove item');
-//     state.itemListState.removeAt(action.index);
-//     return state.copyWith(state.itemListState);
-//   }
-//   return state;
-// }
-
-// AppState toogleItemSelectionReducer(
-//     AppState state, ToggleItemSelection action) {
-//   !state.itemListState.elementAt(action.index).done;
-//   return state.copyWith(state.itemListState);
-// }
-
-// AppState updateStateReducer(AppState state, UpdateStateAction action) {
-//   return action.newState;
-// }
-
-// AppState toggleItemSelectionReducer(
-//     AppState state, ToggleItemSelection action) {
-//   // Create a copy of the list
-//   Item modifiedItem = state.itemListState
-//       .elementAt(action.index); // Retrieve the element at the specified index
-//   modifiedItem.done = !modifiedItem.done; // Toggle the done property
-//   state.itemListState.replaceRange(action.index, action.index + 1, [
-//     modifiedItem
-//   ]); // Replace the element in the list with the modified element
-//   return state.copyWith(state
-//       .itemListState); // Return a copy of the current state with the updated list of items
-// }

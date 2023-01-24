@@ -36,4 +36,12 @@ class AppState {
         return itemListState.where((e) => e.done == true).toList();
     }
   }
+
+  int get completed {
+    return itemListState.where((e) => e.done == true).toList().length;
+  }
+
+  int get notCompleted {
+    return itemListState.where((e) => e.done == false).toList().length;
+  }
 }

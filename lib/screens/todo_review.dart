@@ -3,6 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 import 'package:todo_new/Appstate/appstate.dart';
 import 'package:todo_new/actions/item_filter.dart';
+import 'package:todo_new/components/todo_manager.dart';
 
 import '../actions/actions.dart';
 import '../components/app_text.dart';
@@ -29,7 +30,25 @@ class _TodoReviewState extends State<TodoReview> {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  TextField(controller: controller),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TodoManager(
+                            color: Colors.grey,
+                            title: 'In Progress ',
+                            icon: Icons.toys_sharp,
+                            text: '${vm.notComplete()}'),
+                      ),
+                      spaceHorizontal,
+                      Expanded(
+                        child: TodoManager(
+                            color: Colors.green,
+                            title: 'Completed',
+                            icon: Icons.abc_outlined,
+                            text: '${vm.complete()}'),
+                      ),
+                    ],
+                  ),
                   spaceVertical,
                   Row(
                     children: [
@@ -82,4 +101,8 @@ class _ViewModel {
   final BuildContext context;
   final Store<AppState> store;
   const _ViewModel({required this.store, required this.context});
+  List<dynamic> get filtered => store.state.filteredItems;
+
+  int complete() => store.state.completed;
+  int notComplete() => store.state.notCompleted;
 }

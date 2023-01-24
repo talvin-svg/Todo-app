@@ -180,6 +180,5 @@ class _ViewModel {
 
   const _ViewModel({required this.context, required this.store});
 
-  List<dynamic> get filtered => store.state.filteredItems;
   List<Item> get itemList => store.state.itemListState;
 }
