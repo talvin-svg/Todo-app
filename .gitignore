@@ -506,3 +506,4 @@ build/ios/iphonesimulator/Runner.app/Frameworks/GTMSessionFetcher.framework/GTMS
 .dart_tool/flutter_build/42cea83c810d5987e209c4c3855bd83f/debug_ios_bundle_flutter_assets.stamp
 .dart_tool/flutter_build/42cea83c810d5987e209c4c3855bd83f/flutter_assets.d
 *.d
+build/ios/iphonesimulator/Runner.app/Frameworks/openssl_grpc.framework/openssl_grpc
