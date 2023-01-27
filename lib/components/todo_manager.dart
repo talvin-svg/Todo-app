@@ -28,7 +28,15 @@ class _TodoManagerState extends State<TodoManager> {
       child: GestureDetector(
         child: Container(
           decoration: BoxDecoration(
-              color: widget.color, borderRadius: BorderRadius.circular(10)),
+              color: widget.color,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: const [
+                BoxShadow(
+                    color: Colors.black12,
+                    offset: Offset(10, 5),
+                    spreadRadius: 5,
+                    blurRadius: 10)
+              ]),
           width: 200,
           height: 100,
           child: Center(
@@ -47,13 +55,31 @@ class _TodoManagerState extends State<TodoManager> {
                       const SizedBox(
                         width: 10.0,
                       ),
-                      Icon(widget.icon)
+                      Stack(
+                        children: [
+                          Icon(widget.icon),
+                          Center(
+                            child: Container(
+                              width: 20,
+                              decoration: const BoxDecoration(
+                                  shape: BoxShape.circle, color: Colors.blue),
+                            ),
+                          ),
+                          Center(
+                            child: Container(
+                                margin: const EdgeInsets.all(6),
+                                decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.pink)),
+                          ),
+                        ],
+                      )
                     ],
                   ),
                   AppText(
                     text: widget.text,
                     fontSize: 25,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.bold,
                   ),
                 ],
               ),

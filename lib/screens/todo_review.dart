@@ -3,6 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 import 'package:todo_new/Appstate/appstate.dart';
 import 'package:todo_new/actions/item_filter.dart';
+import 'package:todo_new/components/scaffold_error_message.dart';
 import 'package:todo_new/components/todo_manager.dart';
 
 import '../actions/actions.dart';
@@ -19,7 +20,6 @@ class TodoReview extends StatefulWidget {
 }
 
 class _TodoReviewState extends State<TodoReview> {
-  final controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,7 +58,6 @@ class _TodoReviewState extends State<TodoReview> {
                           ontap: () {
                             vm.store.dispatch(
                                 const ChangeFilterAction(ItemFilter.all));
-                            controller.text = '';
                           },
                           color: Colors.blue),
                       spaceHorizontal,
@@ -67,7 +66,6 @@ class _TodoReviewState extends State<TodoReview> {
                           ontap: () {
                             vm.store.dispatch(
                                 const ChangeFilterAction(ItemFilter.done));
-                            controller.text = '';
                           },
                           color: Colors.blue),
                       spaceHorizontal,
@@ -75,20 +73,12 @@ class _TodoReviewState extends State<TodoReview> {
                   ),
                   Expanded(
                       child: ListView.builder(
-                          itemCount: vm.store.state.filteredItems.length,
+                          itemCount: vm.filtered.length,
                           itemBuilder: ((context, index) {
-                            final item =
-                                vm.store.state.filteredItems.elementAt(index);
+                            final Item item = vm.filtered.elementAt(index);
 
                             return ListTile(
                               title: AppText(text: item.title),
-                              trailing: IconButton(
-                                  onPressed: () {
-                                    vm.store.dispatch(RemoveAction(
-                                      index: index,
-                                    ));
-                                  },
-                                  icon: const Icon(Icons.delete)),
                             );
                           })))
                 ],

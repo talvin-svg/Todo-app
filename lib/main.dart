@@ -20,6 +20,7 @@ Future<void> main() async {
     StoreProvider<AppState>(
       store: store,
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         home: Scaffold(
           body: MyApp(store: store),
         ),

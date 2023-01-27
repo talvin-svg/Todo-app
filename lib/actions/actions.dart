@@ -28,12 +28,17 @@ class EditItemAction extends TodoAction {
   const EditItemAction({required this.index, required this.name});
 }
 
-class UpdateStateAction {
-  final AppState newState;
-  const UpdateStateAction(this.newState);
-}
-
 class ChangeFilterAction {
   final ItemFilter filter;
   const ChangeFilterAction(this.filter);
+}
+
+class StartLoadingAction {
+  final bool isLoading;
+  const StartLoadingAction(this.isLoading);
+}
+
+class StopLoadingAction {
+  final bool isLoading;
+  const StopLoadingAction(this.isLoading);
 }

@@ -35,6 +35,7 @@ class _HompePageTooState extends State<HompePageToo> {
   @override
   void dispose() {
     controller.dispose();
+    dialogController.dispose();
     super.dispose();
   }
 
