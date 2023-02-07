@@ -32,13 +32,3 @@ class ChangeFilterAction {
   final ItemFilter filter;
   const ChangeFilterAction(this.filter);
 }
-
-class StartLoadingAction {
-  final bool isLoading;
-  const StartLoadingAction(this.isLoading);
-}
-
-class StopLoadingAction {
-  final bool isLoading;
-  const StopLoadingAction(this.isLoading);
-}

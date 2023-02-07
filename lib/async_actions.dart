@@ -52,18 +52,22 @@
 //   }
 
 // }
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
+import 'package:redux/redux.dart';
+import 'package:todo_new/Appstate/appstate.dart';
+import 'package:todo_new/firestore/firestore.dart';
 import 'package:todo_new/screens/homepage_revamped.dart';
 
 import 'components/scaffold_error_message.dart';
 import 'components/text_field_validator.dart';
+import 'model/model.dart';
 
-FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+//TODO fix this page.
 
 Future<void> signOut() async {
   try {
-    await firebaseAuth.signOut();
+    await Firestore.firebaseAuth.signOut();
   } catch (e) {
     print(e);
   }
@@ -80,9 +84,8 @@ Future signIn(String email, String password, BuildContext context) async {
   }
   await signOut();
   try {
-    var result = await firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password);
-    String user = result.user!.uid;
+    var result = await Firestore.firebaseAuth
+        .signInWithEmailAndPassword(email: email, password: password);
     onSuccess = true;
     previewSuccess(
         message: 'Welcome Back!, Lets get to work', context: context);
@@ -100,3 +103,17 @@ Future signIn(String email, String password, BuildContext context) async {
     return;
   }
 }
+
+
+// List<Item> fetchUserTodos({  required BuildContext context,
+//   required Store<AppState> store,
+//   required String collectionPath,
+//   required String docPath,
+//    required Map<String, dynamic> data,
+//     Function? onSuccess,
+//   })async{
+//     try{
+//       DocumentSnapshot snapshot = 
+//      await db.
+//     }
+

@@ -55,25 +55,7 @@ class _TodoManagerState extends State<TodoManager> {
                       const SizedBox(
                         width: 10.0,
                       ),
-                      Stack(
-                        children: [
-                          Icon(widget.icon),
-                          Center(
-                            child: Container(
-                              width: 20,
-                              decoration: const BoxDecoration(
-                                  shape: BoxShape.circle, color: Colors.blue),
-                            ),
-                          ),
-                          Center(
-                            child: Container(
-                                margin: const EdgeInsets.all(6),
-                                decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.pink)),
-                          ),
-                        ],
-                      )
+                      Icon(widget.icon)
                     ],
                   ),
                   AppText(

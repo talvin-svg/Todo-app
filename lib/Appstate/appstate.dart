@@ -1,14 +1,19 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
-import '../model/model.dart';
-import '../actions/item_filter.dart';
+import 'package:todo_new/actions/item_filter.dart';
+import 'package:todo_new/loading/state.dart';
+import 'package:todo_new/model/model.dart';
 
 @immutable
 class AppState {
-  // List itemListState = <Item>[];
+  const AppState(
+      {this.loadingState = const LoadingState(),
+      this.itemListState = const [],
+      this.filter = ItemFilter.all});
+
   final List<Item> itemListState;
   final ItemFilter filter;
-  const AppState({this.itemListState = const [], this.filter = ItemFilter.all});
+  final LoadingState loadingState;
 
   factory AppState.initial() => const AppState();
 

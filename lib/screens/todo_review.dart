@@ -10,7 +10,7 @@ import '../actions/actions.dart';
 import '../components/app_text.dart';
 import '../components/constants.dart';
 import '../components/custom_button.dart';
-import '../model/model.dart';
+import 'package:todo_new/list/model.dart';
 
 class TodoReview extends StatefulWidget {
   const TodoReview({super.key});

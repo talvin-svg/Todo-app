@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_new/components/app_text.dart';
 
 class CustomDismissedContainer extends StatelessWidget {
   const CustomDismissedContainer(
@@ -22,10 +23,10 @@ class CustomDismissedContainer extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(
-              name ?? 'DELETE',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
+            child: AppText(
+                text: name ?? 'DELETE',
+                fontSize: 16,
+                fontWeight: FontWeight.bold),
           ),
           const SizedBox(width: 10),
           Icon(icon)
