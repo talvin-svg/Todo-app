@@ -7,7 +7,7 @@ import 'package:todo_new/components/constants.dart';
 import 'package:todo_new/components/custom_button.dart';
 import 'package:todo_new/components/dismissed_container.dart';
 import 'package:todo_new/components/scaffold_error_message.dart';
-import 'package:todo_new/model/model.dart';
+import 'package:todo_new/list/model.dart';
 import 'package:todo_new/screens/todo_review.dart';
 
 import '../components/app_text.dart';
