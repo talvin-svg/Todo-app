@@ -61,7 +61,7 @@ import 'package:todo_new/screens/homepage_revamped.dart';
 
 import 'components/scaffold_error_message.dart';
 import 'components/text_field_validator.dart';
-import 'model/model.dart';
+import 'package:todo_new/list/model.dart';
 
 //TODO fix this page.
 

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo_new/components/app_text.dart';
 
-import '../model/model.dart';
-
 enum TodoType { urgent, important, regular }
 
 class TextCard extends StatelessWidget {
