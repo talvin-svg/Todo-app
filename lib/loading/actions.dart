@@ -1,5 +1,3 @@
-import 'dart:html';
-
 class StartLoadingAction {
   final String? loadingKey;
 
@@ -7,7 +5,7 @@ class StartLoadingAction {
 
   @override
   String toString() {
-    return 'Start loading state for $loadingKey]';
+    return 'Start loading state for $loadingKey ';
   }
 }
 
@@ -18,6 +16,6 @@ class StopLoadingAction {
 
   @override
   String toString() {
-    return 'Start loading state for $loadingKey]';
+    return 'Stop loading state for $loadingKey';
   }
 }

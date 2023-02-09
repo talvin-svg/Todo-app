@@ -1,11 +1,13 @@
+import 'package:todo_new/loading/model.dart';
+
 class LoadingState {
-  final Map<String, bool> loadingState;
+  final Loading loading;
 
-  LoadingState({this.loadingState = const {}});
+  const LoadingState({this.loading = const Loading({})});
 
-  LoadingState copyWith({Map<String, bool>? loadingState}) {
+  LoadingState copyWith({Loading? loading}) {
     return LoadingState(
-      loadingState: loadingState ?? this.loadingState,
+      loading: loading ?? this.loading,
     );
   }
 }

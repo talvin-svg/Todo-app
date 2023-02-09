@@ -2,8 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
-import 'package:todo_new/reducers/reducer.dart';
+import 'package:todo_new/Appstate/reducer.dart';
+import 'package:todo_new/components/theme/theme_constansts.dart';
 import 'package:todo_new/screens/homepage_revamped.dart';
+import 'package:todo_new/screens/intro_screenpage.dart';
 import 'package:todo_new/screens/signin.dart';
 import 'package:todo_new/screens/todo_review.dart';
 import '/screens/signup.dart';
@@ -40,6 +42,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        theme: dark,
         onUnknownRoute: (settings) => MaterialPageRoute(
             settings: settings, builder: (context) => const WelcomeScreen()),
         routes: {
@@ -48,8 +51,9 @@ class MyApp extends StatelessWidget {
           SignInPage.id: (context) => const SignInPage(),
           HompePageToo.id: (context) => const HompePageToo(),
           TodoReview.id: (context) => const TodoReview(),
+          IntroScreen.id: (context) => const IntroScreen(),
         },
         title: 'Flutter Demo',
-        home: const HompePageToo());
+        home: const IntroScreen());
   }
 }

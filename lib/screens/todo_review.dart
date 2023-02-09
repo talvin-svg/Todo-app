@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 import 'package:todo_new/Appstate/appstate.dart';
-import 'package:todo_new/actions/item_filter.dart';
+import 'package:todo_new/Appstate/reducer.dart';
+
 import 'package:todo_new/components/todo_manager.dart';
 
-import '../actions/actions.dart';
+import 'package:todo_new/list/state.dart';
+
 import '../components/app_text.dart';
 import '../components/constants.dart';
 import '../components/custom_button.dart';
@@ -24,7 +26,10 @@ class _TodoReviewState extends State<TodoReview> {
     return Scaffold(
         appBar: AppBar(),
         body: StoreConnector<AppState, _ViewModel>(
-            converter: ((store) => _ViewModel(store: store, context: context)),
+            converter: ((store) => _ViewModel(
+                store: store,
+                context: context,
+                lost: store.state.itemListState)),
             builder: (context, vm) {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -89,9 +94,10 @@ class _TodoReviewState extends State<TodoReview> {
 class _ViewModel {
   final BuildContext context;
   final Store<AppState> store;
-  const _ViewModel({required this.store, required this.context});
-  List<dynamic> get filtered => store.state.filteredItems;
+  const _ViewModel({required this.store, required this.context, required lost});
 
-  int complete() => store.state.completed;
-  int notComplete() => store.state.notCompleted;
+  List<Item> get filtered => store.state.filteredItems;
+
+  int complete() => store.state.itemListState.completed;
+  int notComplete() => store.state.itemListState.notCompleted;
 }

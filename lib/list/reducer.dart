@@ -1,51 +1,43 @@
-import 'package:flutter/material.dart';
+import 'package:todo_new/list/actions/actions.dart';
+import 'package:todo_new/list/model.dart';
+import 'package:todo_new/list/state.dart';
 
-import '../actions/item_filter.dart';
-import '/Appstate/appstate.dart';
-import '/actions/actions.dart';
 import 'package:redux/redux.dart';
 
-import '../model/model.dart';
-
-List<Item> addItemReducer(List<Item> previousItems, AddItemAction action) {
-  return previousItems = [...previousItems, action.item];
+ItemListState addItemReducer(
+    ItemListState previousItems, AddItemAction action) {
+  var newItems =
+      previousItems.copyWith([...previousItems.itemList, action.item]);
+  return newItems;
 }
 
-List<Item> removeItemReducer(List<Item> previousItems, RemoveAction action) {
-  previousItems.removeAt(action.index);
+ItemListState removeItemReducer(
+    ItemListState previousItems, RemoveAction action) {
+  previousItems.itemList.removeAt(action.index);
   return previousItems;
 }
 
-List<Item> toggleItemSelectionReducer(
-    List<Item> previousItems, ToggleItemSelection action) {
-  Item modifiedItem = previousItems.elementAt(action.index);
+ItemListState toggleItemSelectionReducer(
+    ItemListState previousItems, ToggleItemSelection action) {
+  Item modifiedItem = previousItems.itemList.elementAt(action.index);
   modifiedItem.done = !modifiedItem.done;
-  previousItems.replaceRange(action.index, action.index + 1, [modifiedItem]);
+  previousItems.itemList
+      .replaceRange(action.index, action.index + 1, [modifiedItem]);
   return previousItems;
 }
 
-List<Item> editItemReducer(List<Item> previousItems, EditItemAction action) {
-  Item modifiedItem = previousItems.elementAt(action.index);
+ItemListState editItemReducer(
+    ItemListState previousItems, EditItemAction action) {
+  Item modifiedItem = previousItems.itemList.elementAt(action.index);
   modifiedItem.title = action.name;
-  previousItems.replaceRange(action.index, action.index + 1, [modifiedItem]);
+  previousItems.itemList
+      .replaceRange(action.index, action.index + 1, [modifiedItem]);
   return previousItems;
 }
 
-ItemFilter itemFilterReducer(AppState state, action) {
-  if (action is ChangeFilterAction) {
-    return action.filter;
-  } else {
-    return state.filter;
-  }
-}
-
-Reducer<List<Item>> itemsReducer = combineReducers<List<Item>>([
-  TypedReducer<List<Item>, AddItemAction>(addItemReducer),
-  TypedReducer<List<Item>, RemoveAction>(removeItemReducer),
-  TypedReducer<List<Item>, ToggleItemSelection>(toggleItemSelectionReducer),
-  TypedReducer<List<Item>, EditItemAction>(editItemReducer),
+Reducer<ItemListState> itemsReducer = combineReducers<ItemListState>([
+  TypedReducer<ItemListState, AddItemAction>(addItemReducer),
+  TypedReducer<ItemListState, RemoveAction>(removeItemReducer),
+  TypedReducer<ItemListState, ToggleItemSelection>(toggleItemSelectionReducer),
+  TypedReducer<ItemListState, EditItemAction>(editItemReducer),
 ]);
-
-AppState appStateReducer(AppState oldState, action) => AppState(
-    itemListState: itemsReducer(oldState.itemListState, action),
-    filter: itemFilterReducer(oldState, action));

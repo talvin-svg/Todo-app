@@ -73,12 +73,12 @@ Future<void> signOut() async {
   }
 }
 
-Future signIn(String email, String password, BuildContext context) async {
+Future signIn(
+    {required String email,
+    required String password,
+    required BuildContext context}) async {
   bool onSuccess = false;
-  if (!isLoginFieldsValid(
-    email,
-    password,
-  )) {
+  if (!isLoginFieldsValid(email, password)) {
     previewError(context: context, message: 'Fields not filled in correctly!');
     return;
   }

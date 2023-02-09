@@ -1,26 +1,18 @@
-import 'package:todo_new/actions/item_filter.dart';
 import 'package:todo_new/list/model.dart';
 
+enum ItemFilter { all, done }
+
 class ItemListState {
-  const ItemListState({this.itemList = const [], this.filter = ItemFilter.all});
+  const ItemListState({this.itemList = const []});
 
   final List<Item> itemList;
-  final ItemFilter filter;
 
   factory ItemListState.initial() => const ItemListState();
 
-  ItemListState copyWith(List<Item>? itemList, ItemFilter? filter) {
+  ItemListState copyWith(List<Item>? itemList) {
     return ItemListState(
-        itemList: itemList ?? this.itemList, filter: filter ?? this.filter);
-  }
-
-  List<Item> get filteredItems {
-    switch (filter) {
-      case ItemFilter.all:
-        return itemList;
-      case ItemFilter.done:
-        return itemList.where((e) => e.done == true).toList();
-    }
+      itemList: itemList ?? this.itemList,
+    );
   }
 
   int get completed {

@@ -86,8 +86,10 @@ class _SignInPageState extends State<SignInPage> {
                     CustomButton(
                         title: "Sign In",
                         ontap: () {
-                          signIn(_emailController.text,
-                              _passwordController.text, context);
+                          signIn(
+                              email: _emailController.text,
+                              password: _passwordController.text,
+                              context: context);
                         },
                         color: Colors.blue),
                     const SizedBox(

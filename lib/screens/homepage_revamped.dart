@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 import 'package:todo_new/Appstate/appstate.dart';
-import 'package:todo_new/actions/actions.dart';
 import 'package:todo_new/components/constants.dart';
 import 'package:todo_new/components/custom_button.dart';
 import 'package:todo_new/components/dismissed_container.dart';
 import 'package:todo_new/components/scaffold_error_message.dart';
+import 'package:todo_new/list/actions/actions.dart';
 import 'package:todo_new/list/model.dart';
 import 'package:todo_new/screens/todo_review.dart';
 
@@ -89,7 +89,7 @@ class _HompePageTooState extends State<HompePageToo> {
               ),
               Expanded(
                   child: ListView.builder(
-                      itemCount: vm.store.state.itemListState.length,
+                      itemCount: vm.store.state.itemListState.itemList.length,
                       itemBuilder: ((context, index) {
                         final item =
                             // vm.store.state.itemListState.elementAt(index);
@@ -161,7 +161,7 @@ class _HompePageTooState extends State<HompePageToo> {
                       return;
                     } else {
                       store.dispatch(EditItemAction(index: index, name: entry));
-                      print(store.state.itemListState[index].title);
+                      print(store.state.itemListState.itemList[index].title);
                       setState(() {
                         dialogController.text = '';
                       });
@@ -181,5 +181,5 @@ class _ViewModel {
 
   const _ViewModel({required this.context, required this.store});
 
-  List<Item> get itemList => store.state.itemListState;
+  List<Item> get itemList => store.state.itemListState.itemList;
 }
