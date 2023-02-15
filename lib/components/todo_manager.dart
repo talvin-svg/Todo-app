@@ -29,7 +29,7 @@ class _TodoManagerState extends State<TodoManager> {
         child: Container(
           decoration: BoxDecoration(
               color: widget.color,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(30),
               boxShadow: const [
                 BoxShadow(
                     color: Colors.black12,
@@ -37,15 +37,14 @@ class _TodoManagerState extends State<TodoManager> {
                     spreadRadius: 5,
                     blurRadius: 10)
               ]),
-          width: 200,
-          height: 100,
+          width: MediaQuery.of(context).size.width - 15,
+          height: 130,
           child: Center(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       AppText(
                         text: widget.title,
