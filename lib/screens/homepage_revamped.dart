@@ -8,6 +8,7 @@ import 'package:todo_new/components/dismissed_container.dart';
 import 'package:todo_new/components/scaffold_error_message.dart';
 import 'package:todo_new/list/actions/actions.dart';
 import 'package:todo_new/list/model.dart';
+import 'package:todo_new/screens/intro_screenpage.dart';
 import 'package:todo_new/screens/todo_review.dart';
 
 import '../components/app_text.dart';
@@ -46,7 +47,7 @@ class _HompePageTooState extends State<HompePageToo> {
         actions: [
           IconButton(
               onPressed: (() {
-                Navigator.pushNamed(context, TodoReview.id);
+                Navigator.pushNamed(context, IntroScreen.id);
               }),
               icon: const Icon(Icons.next_plan_outlined))
         ],
@@ -75,8 +76,8 @@ class _HompePageTooState extends State<HompePageToo> {
                       ontap: () {
                         if (controller.text.isNotEmpty) {
                           final item = controller.text;
-                          vm.store
-                              .dispatch(AddItemAction(item: Item(title: item)));
+                          vm.store.dispatch(AddItemAction(
+                              item: Item(title: item, color: Colors.yellow)));
                           controller.text = '';
                         } else {
                           previewError(

@@ -54,6 +54,6 @@ class MyApp extends StatelessWidget {
           IntroScreen.id: (context) => const IntroScreen(),
         },
         title: 'Flutter Demo',
-        home: const IntroScreen());
+        home: const HompePageToo());
   }
 }

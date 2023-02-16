@@ -1,9 +1,14 @@
+import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 import 'package:todo_new/Appstate/appstate.dart';
 import 'package:todo_new/components/app_text.dart';
+import 'package:todo_new/components/app_text_input_field.dart';
+import 'package:todo_new/components/constants.dart';
+import 'package:todo_new/components/scaffold_error_message.dart';
 import 'package:todo_new/components/todo_manager.dart';
+import 'package:todo_new/list/actions/actions.dart';
 import 'package:todo_new/list/model.dart';
 
 class IntroScreen extends StatefulWidget {
@@ -16,19 +21,28 @@ class IntroScreen extends StatefulWidget {
 class _IntroScreenState extends State<IntroScreen> {
   bool onTaskSelected = true;
   int selectedIndex = -1;
+  final TextEditingController detailsController = TextEditingController();
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController dateController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    super.dispose();
+    detailsController.dispose();
+    dateController.dispose();
+    titleController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.add),
-      ),
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.background,
-          leading: const CircleAvatar(),
+          leading: GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: const Icon(Icons.arrow_back_ios)),
           actions: [
             Column(
               children: const [
@@ -121,16 +135,105 @@ class _IntroScreenState extends State<IntroScreen> {
               const SizedBox(
                 height: 20,
               ),
-              const TodoManager(
-                  color: Colors.blue,
-                  title: 'Test',
-                  icon: Icons.check,
-                  text: 'Tester'),
+              Expanded(
+                child: ListView.builder(
+                    itemCount: vm.filtered.length,
+                    itemBuilder: (context, index) {
+                      final item = vm.filtered.elementAt(index);
+                      if (vm.filtered.isEmpty) {
+                        return TodoManager(
+                          color: Theme.of(context).colorScheme.primary,
+                          title:
+                              'Click the icon on the top right to get started! , ',
+                          details: 'This is an auto generated todo item',
+                          dueDate: '',
+                          icon: const Icon(Icons.check),
+                        );
+                      }
+                      return Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: TodoManager(
+                            color: item.color!,
+                            title: item.title!,
+                            ontap: () {},
+                            details: detailsController.text,
+                            dueDate: dateController.text,
+                            icon: const Icon(Icons.check),
+                          ));
+                    }),
+              ),
+              Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: FloatingActionButton(onPressed: () {
+                    showModalBottomSheet(
+                        backgroundColor: Colors.black,
+                        context: context,
+                        builder: (context) {
+                          return Column(
+                            children: [
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () => Navigator.pop(context),
+                                    child: AppText(
+                                      text: 'Cancel',
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ),
+                                  AppText(
+                                    text: 'New Todo',
+                                    fontSize: 20,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onBackground,
+                                  ),
+                                  GestureDetector(
+                                      onTap: () {
+                                        _addTodo(vm.store);
+                                        Navigator.pop(context);
+                                      },
+                                      child: AppText(
+                                        text: 'Add',
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                      )),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                              addTodoForm(context)
+                            ],
+                          );
+                        });
+                  }))
             ],
           );
         },
       ),
     );
+  }
+
+  void _addTodo(Store<AppState> store) {
+    if (detailsController.text.isNotEmpty && titleController.text.isNotEmpty) {
+      final itemTitle = titleController.text;
+      store.dispatch(
+        AddItemAction(
+          item: Item(color: Colors.yellow, title: itemTitle),
+        ),
+      );
+      detailsController.text = '';
+      titleController.text = '';
+    } else {
+      previewError(
+          message: 'Please make sure every field is not empty',
+          context: context);
+    }
   }
 
   Widget tasksOrBoards(BuildContext context, _ViewModel vm) {
@@ -325,6 +428,47 @@ class _IntroScreenState extends State<IntroScreen> {
         ),
       );
     });
+  }
+
+  Widget addTodoForm(BuildContext context) {
+    return Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            Card(
+              child: Column(
+                children: [
+                  AppRichTextInputField(
+                    context,
+                    hintText: 'Title',
+                    controller: titleController,
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
+                ],
+              ),
+            ),
+            const Divider(),
+            Card(
+              child: AppRichTextInputField(
+                context,
+                hintText: 'Description',
+                controller: detailsController,
+                color: Colors.grey,
+              ),
+            ),
+            spaceVertical,
+            DateTimePicker(
+              controller: dateController,
+              firstDate: DateTime(2000),
+              lastDate: DateTime(2100),
+              dateLabelText: 'Date',
+              icon: const Icon(Icons.event),
+              onChanged: (value) {
+                print(value);
+              },
+            )
+          ],
+        ));
   }
 }
 

@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:todo_new/components/app_text.dart';
 
 class TodoManager extends StatefulWidget {
-  const TodoManager({
-    super.key,
-    required this.color,
-    required this.title,
-    this.ontap,
-    required this.icon,
-    required this.text,
-  });
+  const TodoManager(
+      {super.key,
+      required this.color,
+      required this.title,
+      this.ontap,
+      required this.icon,
+      required this.details,
+      required this.dueDate});
   final Color color;
   final String title;
   final void Function()? ontap;
-  final IconData icon;
-  final String text;
-
+  final Icon icon;
+  final String details;
+  final String dueDate;
   @override
   State<TodoManager> createState() => _TodoManagerState();
 }
@@ -32,10 +32,10 @@ class _TodoManagerState extends State<TodoManager> {
               borderRadius: BorderRadius.circular(30),
               boxShadow: const [
                 BoxShadow(
-                    color: Colors.black12,
-                    offset: Offset(10, 5),
-                    spreadRadius: 5,
-                    blurRadius: 10)
+                    color: Colors.white,
+                    offset: Offset(2, 1),
+                    spreadRadius: 1,
+                    blurRadius: 1)
               ]),
           width: MediaQuery.of(context).size.width - 15,
           height: 130,
@@ -48,18 +48,20 @@ class _TodoManagerState extends State<TodoManager> {
                     children: [
                       AppText(
                         text: widget.title,
-                        fontSize: 15,
+                        fontSize: 25,
                         fontWeight: FontWeight.w900,
                       ),
                       const SizedBox(
                         width: 10.0,
                       ),
-                      Icon(widget.icon)
+                      Expanded(child: Container()),
+                      AppText(text: widget.dueDate),
+                      GestureDetector(onTap: widget.ontap, child: widget.icon)
                     ],
                   ),
                   AppText(
-                    text: widget.text,
-                    fontSize: 25,
+                    text: widget.details,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                   ),
                 ],
