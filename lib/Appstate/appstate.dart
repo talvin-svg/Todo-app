@@ -22,6 +22,8 @@ class AppState {
         return itemListState.itemList;
       case ItemFilter.done:
         return itemListState.itemList.where((e) => e.done == true).toList();
+      case ItemFilter.active:
+        return itemListState.itemList.where((e) => e.done == false).toList();
     }
   }
 }

@@ -77,7 +77,10 @@ class _HompePageTooState extends State<HompePageToo> {
                         if (controller.text.isNotEmpty) {
                           final item = controller.text;
                           vm.store.dispatch(AddItemAction(
-                              item: Item(title: item, color: Colors.yellow)));
+                              item: Item(
+                                  title: item,
+                                  color: Colors.yellow,
+                                  details: '')));
                           controller.text = '';
                         } else {
                           previewError(

@@ -49,20 +49,27 @@ class _TodoManagerState extends State<TodoManager> {
                       AppText(
                         text: widget.title,
                         fontSize: 25,
-                        fontWeight: FontWeight.w900,
+                        fontWeight: FontWeight.normal,
                       ),
                       const SizedBox(
                         width: 10.0,
                       ),
                       Expanded(child: Container()),
-                      AppText(text: widget.dueDate),
+                      AppText(
+                        text: widget.dueDate,
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
                       GestureDetector(onTap: widget.ontap, child: widget.icon)
                     ],
                   ),
-                  AppText(
-                    text: widget.details,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+                  Container(
+                    color: Colors.black,
+                    child: AppText(
+                      text: widget.details,
+                      fontSize: 15,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.black,
+                    ),
                   ),
                 ],
               ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 import 'package:todo_new/Appstate/appstate.dart';
+import 'package:todo_new/Appstate/reducer.dart';
 import 'package:todo_new/components/app_text.dart';
 import 'package:todo_new/components/app_text_input_field.dart';
 import 'package:todo_new/components/constants.dart';
@@ -10,6 +11,7 @@ import 'package:todo_new/components/scaffold_error_message.dart';
 import 'package:todo_new/components/todo_manager.dart';
 import 'package:todo_new/list/actions/actions.dart';
 import 'package:todo_new/list/model.dart';
+import 'package:todo_new/list/state.dart';
 
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
@@ -20,6 +22,7 @@ class IntroScreen extends StatefulWidget {
 
 class _IntroScreenState extends State<IntroScreen> {
   bool onTaskSelected = true;
+  bool onActiveSelected = true;
   int selectedIndex = -1;
   final TextEditingController detailsController = TextEditingController();
   final TextEditingController titleController = TextEditingController();
@@ -122,7 +125,7 @@ class _IntroScreenState extends State<IntroScreen> {
               ),
               tasksOrBoards(context, vm),
               lineWidget(context),
-              boardsAndActive(context),
+              boardsAndActive(context, vm.store),
               const SizedBox(
                 height: 10,
               ),
@@ -162,56 +165,69 @@ class _IntroScreenState extends State<IntroScreen> {
                           ));
                     }),
               ),
-              Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: FloatingActionButton(onPressed: () {
-                    showModalBottomSheet(
-                        backgroundColor: Colors.black,
-                        context: context,
-                        builder: (context) {
-                          return Column(
-                            children: [
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () => Navigator.pop(context),
-                                    child: AppText(
-                                      text: 'Cancel',
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                    ),
-                                  ),
-                                  AppText(
-                                    text: 'New Todo',
-                                    fontSize: 20,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onBackground,
-                                  ),
-                                  GestureDetector(
-                                      onTap: () {
-                                        _addTodo(vm.store);
-                                        Navigator.pop(context);
-                                      },
-                                      child: AppText(
-                                        text: 'Add',
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      )),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-                              addTodoForm(context)
-                            ],
-                          );
-                        });
-                  }))
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                      padding: const EdgeInsets.only(bottom: 40),
+                      child: FloatingActionButton(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.secondary,
+                          child: Icon(
+                            Icons.add,
+                            color: Theme.of(context).colorScheme.onSecondary,
+                          ),
+                          onPressed: () {
+                            showModalBottomSheet(
+                                backgroundColor: Colors.black,
+                                context: context,
+                                builder: (context) {
+                                  return Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () => Navigator.pop(context),
+                                            child: AppText(
+                                              text: 'Cancel',
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                            ),
+                                          ),
+                                          AppText(
+                                            text: 'New Todo',
+                                            fontSize: 20,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onBackground,
+                                          ),
+                                          GestureDetector(
+                                              onTap: () {
+                                                _addTodo(vm.store);
+                                                Navigator.pop(context);
+                                              },
+                                              child: AppText(
+                                                text: 'Add',
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                              )),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 20),
+                                      addTodoForm(context)
+                                    ],
+                                  );
+                                });
+                          })),
+                ],
+              )
             ],
           );
         },
@@ -222,9 +238,11 @@ class _IntroScreenState extends State<IntroScreen> {
   void _addTodo(Store<AppState> store) {
     if (detailsController.text.isNotEmpty && titleController.text.isNotEmpty) {
       final itemTitle = titleController.text;
+      final itemDetails = detailsController.text;
       store.dispatch(
         AddItemAction(
-          item: Item(color: Colors.yellow, title: itemTitle),
+          item: Item(
+              color: Colors.yellow, title: itemTitle, details: itemDetails),
         ),
       );
       detailsController.text = '';
@@ -325,7 +343,7 @@ class _IntroScreenState extends State<IntroScreen> {
     );
   }
 
-  Widget boardsAndActive(BuildContext context) {
+  Widget boardsAndActive(BuildContext context, Store<AppState> store) {
     return Padding(
       padding: const EdgeInsets.all(15),
       child: Row(
@@ -365,37 +383,63 @@ class _IntroScreenState extends State<IntroScreen> {
           ),
           Expanded(child: Container()),
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              if (onActiveSelected) {
+                return;
+              } else {
+                setState(() {
+                  onActiveSelected = !onActiveSelected;
+                });
+                store.dispatch(const ChangeFilterAction(ItemFilter.active));
+              }
+            },
             child: Container(
               width: 100,
               height: 35,
               decoration: BoxDecoration(
+                border: onActiveSelected
+                    ? null
+                    : Border.all(color: Colors.white, width: 1),
                 borderRadius: BorderRadius.circular(20),
-                color: Theme.of(context).colorScheme.primary,
+                color: (onActiveSelected)
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.background,
               ),
-              child: const Center(
+              child: Center(
                 child: AppText(
                   text: 'Active',
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  fontWeight: (onActiveSelected) ? FontWeight.bold : null,
+                  color: (onActiveSelected) ? Colors.black : Colors.white,
                 ),
               ),
             ),
           ),
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              if (onActiveSelected) {
+                setState(() {
+                  onActiveSelected = !onActiveSelected;
+                  store.dispatch(const ChangeFilterAction(ItemFilter.done));
+                });
+              }
+            },
             child: Container(
               width: 100,
               height: 35,
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.white, width: 1),
+                border: (onActiveSelected)
+                    ? Border.all(color: Colors.white, width: 1)
+                    : null,
                 borderRadius: BorderRadius.circular(20),
-                color: Theme.of(context).colorScheme.background,
+                color: (onActiveSelected)
+                    ? Theme.of(context).colorScheme.background
+                    : Theme.of(context).colorScheme.primary,
               ),
-              child: const Center(
+              child: Center(
                 child: AppText(
+                  fontWeight: (onActiveSelected) ? null : FontWeight.bold,
                   text: 'Done',
-                  color: Colors.white,
+                  color: (onActiveSelected) ? Colors.white : Colors.black,
                 ),
               ),
             ),

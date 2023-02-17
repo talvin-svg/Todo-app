@@ -1,6 +1,6 @@
 import 'package:todo_new/list/model.dart';
 
-enum ItemFilter { all, done }
+enum ItemFilter { all, done, active }
 
 class ItemListState {
   const ItemListState({this.itemList = const []});
