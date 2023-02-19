@@ -1,17 +1,13 @@
-import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 import 'package:todo_new/Appstate/appstate.dart';
-import 'package:todo_new/Appstate/reducer.dart';
+import 'package:todo_new/async_actions.dart';
 import 'package:todo_new/components/app_text.dart';
-import 'package:todo_new/components/app_text_input_field.dart';
-import 'package:todo_new/components/constants.dart';
-import 'package:todo_new/components/scaffold_error_message.dart';
 import 'package:todo_new/components/todo_manager.dart';
-import 'package:todo_new/list/actions/actions.dart';
 import 'package:todo_new/list/model.dart';
 import 'package:todo_new/list/state.dart';
+import 'package:todo_new/screens/todo_form.dart';
 
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
@@ -156,102 +152,36 @@ class _IntroScreenState extends State<IntroScreen> {
                       return Padding(
                           padding: const EdgeInsets.all(10),
                           child: TodoManager(
-                            color: item.color!,
+                            color: Colors.white,
                             title: item.title!,
                             ontap: () {},
-                            details: detailsController.text,
-                            dueDate: dateController.text,
+                            details: item.details!,
+                            dueDate: item.dueDate?.toIso8601String() ??
+                                'no time alloted',
                             icon: const Icon(Icons.check),
                           ));
                     }),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                      padding: const EdgeInsets.only(bottom: 40),
-                      child: FloatingActionButton(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.secondary,
-                          child: Icon(
-                            Icons.add,
-                            color: Theme.of(context).colorScheme.onSecondary,
-                          ),
-                          onPressed: () {
-                            showModalBottomSheet(
-                                backgroundColor: Colors.black,
-                                context: context,
-                                builder: (context) {
-                                  return Column(
-                                    children: [
-                                      const SizedBox(
-                                        height: 20,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          GestureDetector(
-                                            onTap: () => Navigator.pop(context),
-                                            child: AppText(
-                                              text: 'Cancel',
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
-                                            ),
-                                          ),
-                                          AppText(
-                                            text: 'New Todo',
-                                            fontSize: 20,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onBackground,
-                                          ),
-                                          GestureDetector(
-                                              onTap: () {
-                                                _addTodo(vm.store);
-                                                Navigator.pop(context);
-                                              },
-                                              child: AppText(
-                                                text: 'Add',
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary,
-                                              )),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 20),
-                                      addTodoForm(context)
-                                    ],
-                                  );
-                                });
-                          })),
-                ],
-              )
             ],
           );
         },
       ),
+      floatingActionButton: FloatingActionButton(
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+          child: Icon(
+            Icons.add,
+            color: Theme.of(context).colorScheme.onSecondary,
+          ),
+          onPressed: () {
+            showModalBottomSheet(
+                backgroundColor: Colors.black,
+                context: context,
+                builder: (context) {
+                  return const TodoForm();
+                });
+          }),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
-  }
-
-  void _addTodo(Store<AppState> store) {
-    if (detailsController.text.isNotEmpty && titleController.text.isNotEmpty) {
-      final itemTitle = titleController.text;
-      final itemDetails = detailsController.text;
-      store.dispatch(
-        AddItemAction(
-          item: Item(
-              color: Colors.yellow, title: itemTitle, details: itemDetails),
-        ),
-      );
-      detailsController.text = '';
-      titleController.text = '';
-    } else {
-      previewError(
-          message: 'Please make sure every field is not empty',
-          context: context);
-    }
   }
 
   Widget tasksOrBoards(BuildContext context, _ViewModel vm) {
@@ -390,7 +320,9 @@ class _IntroScreenState extends State<IntroScreen> {
                 setState(() {
                   onActiveSelected = !onActiveSelected;
                 });
-                store.dispatch(const ChangeFilterAction(ItemFilter.active));
+
+                showActiveTodo(
+                    filter: ItemFilter.active, context: context, store: store);
               }
             },
             child: Container(
@@ -419,8 +351,9 @@ class _IntroScreenState extends State<IntroScreen> {
               if (onActiveSelected) {
                 setState(() {
                   onActiveSelected = !onActiveSelected;
-                  store.dispatch(const ChangeFilterAction(ItemFilter.done));
                 });
+                showActiveTodo(
+                    filter: ItemFilter.done, context: context, store: store);
               }
             },
             child: Container(
@@ -472,47 +405,6 @@ class _IntroScreenState extends State<IntroScreen> {
         ),
       );
     });
-  }
-
-  Widget addTodoForm(BuildContext context) {
-    return Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            Card(
-              child: Column(
-                children: [
-                  AppRichTextInputField(
-                    context,
-                    hintText: 'Title',
-                    controller: titleController,
-                    color: Theme.of(context).colorScheme.onBackground,
-                  ),
-                ],
-              ),
-            ),
-            const Divider(),
-            Card(
-              child: AppRichTextInputField(
-                context,
-                hintText: 'Description',
-                controller: detailsController,
-                color: Colors.grey,
-              ),
-            ),
-            spaceVertical,
-            DateTimePicker(
-              controller: dateController,
-              firstDate: DateTime(2000),
-              lastDate: DateTime(2100),
-              dateLabelText: 'Date',
-              icon: const Icon(Icons.event),
-              onChanged: (value) {
-                print(value);
-              },
-            )
-          ],
-        ));
   }
 }
 

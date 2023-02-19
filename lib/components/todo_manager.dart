@@ -46,10 +46,13 @@ class _TodoManagerState extends State<TodoManager> {
                 children: [
                   Row(
                     children: [
-                      AppText(
-                        text: widget.title,
-                        fontSize: 25,
-                        fontWeight: FontWeight.normal,
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: AppText(
+                          text: widget.title,
+                          fontSize: 15,
+                          fontWeight: FontWeight.normal,
+                        ),
                       ),
                       const SizedBox(
                         width: 10.0,
@@ -57,16 +60,15 @@ class _TodoManagerState extends State<TodoManager> {
                       Expanded(child: Container()),
                       AppText(
                         text: widget.dueDate,
-                        color: Theme.of(context).colorScheme.onBackground,
+                        color: Colors.black,
                       ),
                       GestureDetector(onTap: widget.ontap, child: widget.icon)
                     ],
                   ),
                   Container(
-                    color: Colors.black,
                     child: AppText(
                       text: widget.details,
-                      fontSize: 15,
+                      fontSize: 25,
                       fontWeight: FontWeight.normal,
                       color: Colors.black,
                     ),

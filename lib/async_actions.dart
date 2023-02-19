@@ -56,7 +56,10 @@
 import 'package:flutter/material.dart';
 import 'package:redux/redux.dart';
 import 'package:todo_new/Appstate/appstate.dart';
+import 'package:todo_new/Appstate/reducer.dart';
 import 'package:todo_new/firestore/firestore.dart';
+import 'package:todo_new/list/actions/actions.dart';
+import 'package:todo_new/list/state.dart';
 import 'package:todo_new/screens/homepage_revamped.dart';
 
 import 'components/scaffold_error_message.dart';
@@ -104,6 +107,35 @@ Future signIn(
   }
 }
 
+void addTodo(
+  DateTime? date, {
+  required BuildContext context,
+  required Store<AppState> store,
+  required String details,
+  required String title,
+}) {
+  if (details.isNotEmpty && title.isNotEmpty) {
+    final itemTitle = title;
+    final itemDetails = details;
+    store.dispatch(
+      AddItemAction(
+        item: Item(title: itemTitle, details: itemDetails, dueDate: date),
+      ),
+    );
+    details = '';
+    title = '';
+  } else {
+    previewError(
+        message: 'Please make sure every field is not empty', context: context);
+  }
+}
+
+void showActiveTodo(
+    {required ItemFilter filter,
+    required BuildContext context,
+    required Store<AppState> store}) {
+  store.dispatch(ChangeFilterAction(filter));
+}
 
 // List<Item> fetchUserTodos({  required BuildContext context,
 //   required Store<AppState> store,

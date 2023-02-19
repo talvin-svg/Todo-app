@@ -7,16 +7,21 @@ class Item {
   DateTime? createdAt;
   Color? color;
   String? details;
+  DateTime? dueDate;
 
   Item(
       {required this.title,
       this.id,
       bool? done,
-      required this.color,
-      required details});
+      this.color,
+      required this.details,
+      this.createdAt,
+      this.dueDate});
 
   factory Item.fromMap(Map<String, dynamic>? data) {
     return Item(
+        dueDate: data?['dueDate'],
+        createdAt: data?['createdAt'],
         title: data?['title'],
         id: data?['id'],
         color: data?['color'],
@@ -29,13 +34,22 @@ class Item {
       'done': false,
       'createdAt': '',
       'id': id,
-      'details': details
+      'details': details,
+      'dueDate': dueDate,
     };
   }
 
   Item copyWith(
-      {String? title, String? id, bool? done, Color? color, String? details}) {
+      {String? title,
+      String? id,
+      bool? done,
+      Color? color,
+      String? details,
+      DateTime? createdAt,
+      DateTime? dueDate}) {
     return Item(
+        createdAt: createdAt ?? this.createdAt,
+        dueDate: dueDate ?? this.dueDate,
         title: title ?? this.title,
         id: id ?? this.id,
         done: done ?? this.done,
