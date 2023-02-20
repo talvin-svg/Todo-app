@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 import 'package:todo_new/Appstate/appstate.dart';
@@ -6,6 +8,7 @@ import 'package:todo_new/async_actions.dart';
 import 'package:todo_new/components/app_text.dart';
 import 'package:todo_new/components/todo_manager.dart';
 import 'package:todo_new/list/model.dart';
+import 'package:todo_new/list/selectors.dart';
 import 'package:todo_new/list/state.dart';
 import 'package:todo_new/screens/todo_form.dart';
 
@@ -19,11 +22,12 @@ class IntroScreen extends StatefulWidget {
 class _IntroScreenState extends State<IntroScreen> {
   bool onTaskSelected = true;
   bool onActiveSelected = true;
-  int selectedIndex = -1;
+  int selectedIndex = 0;
   final TextEditingController detailsController = TextEditingController();
   final TextEditingController titleController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  List weeks = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   @override
   void dispose() {
@@ -36,109 +40,131 @@ class _IntroScreenState extends State<IntroScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.background,
+          elevation: 0,
+          backgroundColor: Colors.transparent,
           leading: GestureDetector(
               onTap: () => Navigator.pop(context),
               child: const Icon(Icons.arrow_back_ios)),
-          actions: [
-            Column(
-              children: const [
-                CircleAvatar(
-                  child: Icon(Icons.notifications),
-                ),
-              ],
+          actions: const [
+            CircleAvatar(
+              backgroundColor: Colors.black45,
+              child: Icon(
+                Icons.notifications,
+                color: Colors.white,
+              ),
             ),
-            const SizedBox(
+            SizedBox(
               width: 5,
             ),
-            const CircleAvatar(
-              child: Icon(Icons.add),
-            )
+            CircleAvatar(
+              backgroundColor: Colors.black45,
+              child: Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(
+              width: 5,
+            ),
           ]),
-      body: StoreConnector<AppState, _ViewModel>(
-        converter: (store) => _ViewModel(context: context, store: store),
-        builder: (context, vm) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(
-                height: 30,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: AppText(
-                  text: "Good Morning ",
-                  color: Theme.of(context).colorScheme.primary,
-                  fontSize: 60,
+      body: Container(
+        decoration: const BoxDecoration(
+            gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.deepOrange,
+            Colors.purple,
+          ],
+        )),
+        child: StoreConnector<AppState, _ViewModel>(
+          converter: (store) => _ViewModel(context: context, store: store),
+          builder: (context, vm) {
+            List<Item> items = vm.filtered(weeks[selectedIndex]);
+            return ListView(
+              children: [
+                const SizedBox(
+                  height: 30,
                 ),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 2.0),
-                child: Row(
-                  children: [
-                    AppText(
-                        text: 'Today is Monday',
-                        fontSize: 15,
-                        color: Theme.of(context).colorScheme.onBackground),
-                    Expanded(child: Container()),
-                    AppText(
-                        text: '75% Done',
-                        fontSize: 15,
-                        color: Theme.of(context).colorScheme.onBackground),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Animate(
+                    effects: [FadeEffect()],
+                    child: AppText(
+                      text: "Good Morning ",
+                      color: Theme.of(context).colorScheme.onBackground,
+                      fontSize: 50,
+                    ),
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 8.0,
-                  right: 8.0,
+                Padding(
+                  padding:
+                      const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 2.0),
+                  child: Row(
+                    children: [
+                      AppText(
+                          text: 'Today is Monday',
+                          fontSize: 15,
+                          color: Theme.of(context).colorScheme.onBackground),
+                      Expanded(child: Container()),
+                      AppText(
+                          text: '75% Done',
+                          fontSize: 15,
+                          color: Theme.of(context).colorScheme.onBackground),
+                    ],
+                  ),
                 ),
-                child: Row(
-                  children: [
-                    AppText(
-                        text: 'Dec 12, 2022',
-                        fontSize: 12,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onBackground
-                            .withOpacity(0.3)),
-                    Expanded(child: Container()),
-                    AppText(
-                        text: 'Completed Tasks',
-                        fontSize: 12,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onBackground
-                            .withOpacity(0.3)),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 8.0,
+                    right: 8.0,
+                  ),
+                  child: Row(
+                    children: [
+                      AppText(
+                          text: 'Dec 12, 2022',
+                          fontSize: 12,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onBackground
+                              .withOpacity(0.3)),
+                      Expanded(child: Container()),
+                      AppText(
+                          text: 'Completed Tasks',
+                          fontSize: 12,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onBackground
+                              .withOpacity(0.3)),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 40,
-              ),
-              tasksOrBoards(context, vm),
-              lineWidget(context),
-              boardsAndActive(context, vm.store),
-              const SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: Row(
-                  children: weekdays(context),
+                const SizedBox(
+                  height: 40,
                 ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Expanded(
-                child: ListView.builder(
-                    itemCount: vm.filtered.length,
+                tasksOrBoards(context, vm),
+                lineWidget(context),
+                boardsAndActive(context, vm.store),
+                const SizedBox(
+                  height: 10,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10, right: 10),
+                  child: Row(
+                    children: weekdays(context),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: items.length,
                     itemBuilder: (context, index) {
-                      final item = vm.filtered.elementAt(index);
+                      final item = items[index];
                       if (vm.store.state.itemListState.itemList.isEmpty) {
                         return TodoManager(
                           color: Theme.of(context).colorScheme.primary,
@@ -161,10 +187,10 @@ class _IntroScreenState extends State<IntroScreen> {
                             icon: const Icon(Icons.check),
                           ));
                     }),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
           backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -383,7 +409,6 @@ class _IntroScreenState extends State<IntroScreen> {
   }
 
   List<Widget> weekdays(BuildContext context) {
-    List weeks = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     return List.generate(weeks.length, (index) {
       return Expanded(
         child: GestureDetector(
@@ -414,7 +439,7 @@ class _ViewModel {
   final Store<AppState> store;
   final BuildContext context;
 
-  List<Item> get filtered => store.state.filteredItems;
+  List<Item> filtered(String day) => selectItemsByDay(day, store);
 
   int complete() => store.state.itemListState.completed;
   int notComplete() => store.state.itemListState.notCompleted;
