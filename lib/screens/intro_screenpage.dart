@@ -139,7 +139,7 @@ class _IntroScreenState extends State<IntroScreen> {
                     itemCount: vm.filtered.length,
                     itemBuilder: (context, index) {
                       final item = vm.filtered.elementAt(index);
-                      if (vm.filtered.isEmpty) {
+                      if (vm.store.state.itemListState.itemList.isEmpty) {
                         return TodoManager(
                           color: Theme.of(context).colorScheme.primary,
                           title:
@@ -150,9 +150,9 @@ class _IntroScreenState extends State<IntroScreen> {
                         );
                       }
                       return Padding(
-                          padding: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(1),
                           child: TodoManager(
-                            color: Colors.white,
+                            color: item.color!,
                             title: item.title!,
                             ontap: () {},
                             details: item.details!,

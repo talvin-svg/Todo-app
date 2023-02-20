@@ -20,6 +20,14 @@ class _TodoFormState extends State<TodoForm> {
   late TextEditingController titleController;
   late TextEditingController dateController;
   final formKey = GlobalKey<FormState>();
+  Color? _selectedColor;
+
+  List<Color> todoColors = [
+    Colors.yellow,
+    Colors.green,
+    Colors.purple,
+    Colors.indigo
+  ];
 
   @override
   void initState() {
@@ -76,7 +84,9 @@ class _TodoFormState extends State<TodoForm> {
                             store: vm.store,
                             context: context,
                             details: detailsController.text,
-                            title: titleController.text);
+                            title: titleController.text,
+                            color: _selectedColor ?? Colors.white);
+
                         Navigator.pop(context);
                       },
                       child: AppText(
@@ -119,10 +129,43 @@ class _TodoFormState extends State<TodoForm> {
                       lastDate: DateTime(2100),
                       dateLabelText: 'Date',
                       icon: const Icon(Icons.event),
-                      onChanged: (value) {
-                        print(value);
-                      },
+                      onChanged: (value) {},
                     ),
+                    const SizedBox(
+                      height: 60,
+                    ),
+                    AppText(
+                      text: 'Pick a color',
+                      fontSize: 20,
+                      color: Theme.of(context).colorScheme.onBackground,
+                    ),
+                    spaceVertical,
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: todoColors.map((color) {
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedColor = color;
+                                });
+                              },
+                              child: Container(
+                                height: 40,
+                                width: 40,
+                                margin: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                    border: (_selectedColor == color)
+                                        ? Border.all(
+                                            width: 3, color: Colors.white)
+                                        : null,
+                                    shape: BoxShape.circle,
+                                    color: color),
+                              ),
+                            );
+                          }).toList()),
+                    )
                   ],
                 ),
               ),

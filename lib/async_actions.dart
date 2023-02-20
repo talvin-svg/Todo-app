@@ -107,19 +107,22 @@ Future signIn(
   }
 }
 
-void addTodo(
-  DateTime? date, {
-  required BuildContext context,
-  required Store<AppState> store,
-  required String details,
-  required String title,
-}) {
+void addTodo(DateTime? date,
+    {required BuildContext context,
+    required Store<AppState> store,
+    required String details,
+    required String title,
+    required Color color}) {
   if (details.isNotEmpty && title.isNotEmpty) {
     final itemTitle = title;
     final itemDetails = details;
     store.dispatch(
       AddItemAction(
-        item: Item(title: itemTitle, details: itemDetails, dueDate: date),
+        item: Item(
+            title: itemTitle,
+            details: itemDetails,
+            dueDate: date,
+            color: color),
       ),
     );
     details = '';
