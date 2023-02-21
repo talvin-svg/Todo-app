@@ -4,7 +4,7 @@ class Item {
   String? title;
   String? id;
   bool done = false;
-  DateTime? createdAt;
+  DateTime createdAt;
   Color? color;
   String? details;
   DateTime? dueDate;
@@ -15,7 +15,7 @@ class Item {
       bool? done,
       this.color,
       required this.details,
-      this.createdAt,
+      required this.createdAt,
       this.dueDate});
 
   factory Item.fromMap(Map<String, dynamic>? data) {

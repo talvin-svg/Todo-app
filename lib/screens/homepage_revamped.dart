@@ -27,6 +27,8 @@ class _HompePageTooState extends State<HompePageToo> {
   final controller = TextEditingController();
   final dialogController = TextEditingController();
 
+  final dialogDetailsController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -78,6 +80,7 @@ class _HompePageTooState extends State<HompePageToo> {
                           final item = controller.text;
                           vm.store.dispatch(AddItemAction(
                               item: Item(
+                                  createdAt: DateTime.now(),
                                   title: item,
                                   color: Colors.yellow,
                                   details: '')));
@@ -149,8 +152,16 @@ class _HompePageTooState extends State<HompePageToo> {
         builder: ((context) {
           return AlertDialog(
             title: const AppText(text: 'Edit Todo'),
-            content: TextField(
-              controller: dialogController,
+            content: Column(
+              children: [
+                TextField(
+                  controller: dialogController,
+                ),
+                spaceVertical,
+                TextField(
+                  controller: dialogDetailsController,
+                )
+              ],
             ),
             actions: [
               CustomButton(
@@ -160,14 +171,20 @@ class _HompePageTooState extends State<HompePageToo> {
               CustomButton(
                   title: 'Update',
                   ontap: () async {
-                    String entry = dialogController.text;
-                    if (entry.isEmpty) {
+                    dialogController.text;
+
+                    if (dialogController.text.isEmpty &&
+                        dialogDetailsController.text.isEmpty) {
                       return;
                     } else {
-                      store.dispatch(EditItemAction(index: index, name: entry));
-                      print(store.state.itemListState.itemList[index].title);
+                      store.dispatch(EditItemAction(
+                          index: index,
+                          title: dialogController.text,
+                          details: dialogDetailsController.text));
+
                       setState(() {
                         dialogController.text = '';
+                        dialogDetailsController.text = '';
                       });
                       Navigator.pop(context);
                     }

@@ -29,7 +29,8 @@ ItemListState toggleItemSelectionReducer(
 ItemListState editItemReducer(
     ItemListState previousItems, EditItemAction action) {
   Item modifiedItem = previousItems.itemList.elementAt(action.index);
-  modifiedItem.title = action.name;
+  modifiedItem.title = action.title;
+  modifiedItem.details = action.details;
   previousItems.itemList
       .replaceRange(action.index, action.index + 1, [modifiedItem]);
   return previousItems;

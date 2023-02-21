@@ -22,6 +22,8 @@ class ToggleItemSelection extends TodoAction {
 }
 
 class EditItemAction extends TodoAction {
-  final dynamic index, name;
-  const EditItemAction({required this.index, required this.name});
+  final int index;
+  final String title, details;
+  const EditItemAction(
+      {required this.index, required this.title, required this.details});
 }

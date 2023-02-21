@@ -114,19 +114,17 @@ void addTodo(DateTime? date,
     required String title,
     required Color color}) {
   if (details.isNotEmpty && title.isNotEmpty) {
-    final itemTitle = title;
-    final itemDetails = details;
     store.dispatch(
       AddItemAction(
         item: Item(
-            title: itemTitle,
-            details: itemDetails,
-            dueDate: date,
-            color: color),
+          createdAt: DateTime.now(),
+          title: title,
+          details: details,
+          dueDate: date,
+          color: color,
+        ),
       ),
     );
-    details = '';
-    title = '';
   } else {
     previewError(
         message: 'Please make sure every field is not empty', context: context);
@@ -140,6 +138,14 @@ void showActiveTodo(
   store.dispatch(ChangeFilterAction(filter));
 }
 
+void editTodo(
+    {required BuildContext context,
+    required Store<AppState> store,
+    required String details,
+    required String title,
+    required int index}) {
+  store.dispatch(EditItemAction(index: index, title: title, details: details));
+}
 // List<Item> fetchUserTodos({  required BuildContext context,
 //   required Store<AppState> store,
 //   required String collectionPath,

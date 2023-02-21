@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_fadein/flutter_fadein.dart';
+
 import 'package:flutter_redux/flutter_redux.dart';
+
 import 'package:redux/redux.dart';
 import 'package:todo_new/Appstate/appstate.dart';
 import 'package:todo_new/async_actions.dart';
 import 'package:todo_new/components/app_text.dart';
+import 'package:todo_new/components/app_text_input_field.dart';
+import 'package:todo_new/components/constants.dart';
+import 'package:todo_new/components/custom_button.dart';
 import 'package:todo_new/components/todo_manager.dart';
 import 'package:todo_new/list/model.dart';
 import 'package:todo_new/list/selectors.dart';
 import 'package:todo_new/list/state.dart';
 import 'package:todo_new/screens/todo_form.dart';
+import 'package:todo_new/screens/view_todo_screen.dart';
 
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
@@ -22,12 +26,15 @@ class IntroScreen extends StatefulWidget {
 class _IntroScreenState extends State<IntroScreen> {
   bool onTaskSelected = true;
   bool onActiveSelected = true;
+
   int selectedIndex = 0;
-  final TextEditingController detailsController = TextEditingController();
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController dateController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
-  List weeks = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  final detailsController = TextEditingController();
+  final titleController = TextEditingController();
+  final dateController = TextEditingController();
+  final dialogController = TextEditingController();
+  final dialogDetailsController = TextEditingController();
+
+  List<String> weeks = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   @override
   void dispose() {
@@ -35,6 +42,8 @@ class _IntroScreenState extends State<IntroScreen> {
     detailsController.dispose();
     dateController.dispose();
     titleController.dispose();
+    dialogController.dispose();
+    dialogDetailsController.dispose();
   }
 
   @override
@@ -75,8 +84,8 @@ class _IntroScreenState extends State<IntroScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Colors.deepOrange,
-            Colors.purple,
+            Colors.teal,
+            Colors.indigo,
           ],
         )),
         child: StoreConnector<AppState, _ViewModel>(
@@ -90,13 +99,10 @@ class _IntroScreenState extends State<IntroScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Animate(
-                    effects: [FadeEffect()],
-                    child: AppText(
-                      text: "Good Morning ",
-                      color: Theme.of(context).colorScheme.onBackground,
-                      fontSize: 50,
-                    ),
+                  child: AppText(
+                    text: "Good Morning ",
+                    color: Theme.of(context).colorScheme.onBackground,
+                    fontSize: 50,
                   ),
                 ),
                 Padding(
@@ -160,31 +166,45 @@ class _IntroScreenState extends State<IntroScreen> {
                   height: 20,
                 ),
                 ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     itemCount: items.length,
                     itemBuilder: (context, index) {
                       final item = items[index];
-                      if (vm.store.state.itemListState.itemList.isEmpty) {
-                        return TodoManager(
-                          color: Theme.of(context).colorScheme.primary,
-                          title:
-                              'Click the icon on the top right to get started! , ',
-                          details: 'This is an auto generated todo item',
-                          dueDate: '',
-                          icon: const Icon(Icons.check),
-                        );
-                      }
+
                       return Padding(
                           padding: const EdgeInsets.all(1),
                           child: TodoManager(
+                            onclick: () {
+                              showModalBottomSheet(
+                                  constraints: BoxConstraints(
+                                      maxHeight:
+                                          MediaQuery.of(context).size.height *
+                                              0.7),
+                                  isScrollControlled: true,
+                                  context: context,
+                                  builder: (context) => SizedBox(
+                                        child: ViewTodoScreen(
+                                            backgroundColor: item.color!,
+                                            title: item.title!,
+                                            description: item.details!,
+                                            dueDate: item.dueDate!,
+                                            createdAt: item.createdAt!,
+                                            timeLeft: 'timeLeft'),
+                                      ));
+                            },
                             color: item.color!,
                             title: item.title!,
-                            ontap: () {},
+                            ontap: () {
+                              editor(context, vm.store, index);
+                            },
                             details: item.details!,
                             dueDate: item.dueDate?.toIso8601String() ??
                                 'no time alloted',
-                            icon: const Icon(Icons.check),
+                            icon: const Icon(
+                              Icons.more_horiz_rounded,
+                              color: Colors.black,
+                            ),
                           ));
                     }),
               ],
@@ -420,7 +440,7 @@ class _IntroScreenState extends State<IntroScreen> {
           child: SizedBox(
             child: Center(
               child: AppText(
-                text: '${weeks[index]}',
+                text: weeks[index],
                 color: (selectedIndex == index)
                     ? Colors.white
                     : Colors.white.withOpacity(0.3),
@@ -430,6 +450,84 @@ class _IntroScreenState extends State<IntroScreen> {
         ),
       );
     });
+  }
+
+  Future<dynamic> editor(
+      BuildContext context, Store<AppState> store, int index) {
+    return showDialog(
+        context: context,
+        builder: ((context) {
+          return SimpleDialog(
+              backgroundColor: Colors.black,
+              elevation: 0.0,
+              shape: RoundedRectangleBorder(
+                  side: BorderSide.none,
+                  borderRadius: BorderRadius.circular(10)),
+              title: AppText(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                text: 'Edit Todo',
+                color: Theme.of(context).colorScheme.onBackground,
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              children: [
+                SizedBox(
+                  height: 265,
+                  width: 300,
+                  child: Column(
+                    children: [
+                      AppRichTextInputField(
+                          color: Theme.of(context).colorScheme.onBackground,
+                          context,
+                          hintText: 'Title',
+                          controller: dialogController),
+                      spaceVertical,
+                      AppRichTextInputField(
+                        color: Theme.of(context).colorScheme.onBackground,
+                        context,
+                        hintText: 'Description',
+                        controller: dialogDetailsController,
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          CustomButton(
+                              title: 'Cancel',
+                              ontap: () => Navigator.pop(context),
+                              color: Colors.red),
+                          spaceHorizontal,
+                          CustomButton(
+                              title: 'Update',
+                              ontap: () async {
+                                if (dialogController.text.isEmpty &&
+                                    dialogDetailsController.text.isEmpty) {
+                                  return;
+                                } else {
+                                  editTodo(
+                                      context: context,
+                                      store: store,
+                                      details: dialogDetailsController.text,
+                                      title: dialogController.text,
+                                      index: index);
+                                  setState(() {
+                                    dialogController.text = '';
+                                    dialogDetailsController.text = '';
+                                  });
+                                  Navigator.pop(context);
+                                }
+                              },
+                              color: Colors.green),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ]);
+        }));
   }
 }
 

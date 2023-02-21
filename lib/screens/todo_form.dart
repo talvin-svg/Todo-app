@@ -26,7 +26,7 @@ class _TodoFormState extends State<TodoForm> {
     Colors.yellow,
     Colors.green,
     Colors.purple,
-    Colors.indigo
+    Colors.pink
   ];
 
   @override
@@ -127,7 +127,7 @@ class _TodoFormState extends State<TodoForm> {
                       controller: dateController,
                       firstDate: DateTime(2000),
                       lastDate: DateTime(2100),
-                      dateLabelText: 'Date',
+                      dateLabelText: 'Due Date',
                       icon: const Icon(Icons.event),
                       onChanged: (value) {},
                     ),
