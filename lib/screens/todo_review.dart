@@ -4,8 +4,6 @@ import 'package:redux/redux.dart';
 import 'package:todo_new/Appstate/appstate.dart';
 import 'package:todo_new/Appstate/reducer.dart';
 
-import 'package:todo_new/components/todo_manager.dart';
-
 import 'package:todo_new/list/state.dart';
 
 import '../components/app_text.dart';

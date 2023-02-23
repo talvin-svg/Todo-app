@@ -8,14 +8,16 @@ class Item {
   Color? color;
   String? details;
   DateTime? dueDate;
+  Categories? category;
 
   Item(
       {required this.title,
+      required this.details,
+      required this.createdAt,
+      required this.category,
       this.id,
       bool? done,
       this.color,
-      required this.details,
-      required this.createdAt,
       this.dueDate});
 
   factory Item.fromMap(Map<String, dynamic>? data) {
@@ -26,6 +28,7 @@ class Item {
         id: data?['id'],
         color: data?['color'],
         done: data?['done'],
+        category: data?['category'],
         details: data?['details']);
   }
   Map<String, dynamic> toMap() {
@@ -45,9 +48,11 @@ class Item {
       bool? done,
       Color? color,
       String? details,
+      Categories? category,
       DateTime? createdAt,
       DateTime? dueDate}) {
     return Item(
+        category: category ?? this.category,
         createdAt: createdAt ?? this.createdAt,
         dueDate: dueDate ?? this.dueDate,
         title: title ?? this.title,
@@ -57,3 +62,5 @@ class Item {
         details: details ?? this.details);
   }
 }
+
+enum Categories { urgent, personal, work }

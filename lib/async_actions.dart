@@ -112,11 +112,13 @@ void addTodo(DateTime? date,
     required Store<AppState> store,
     required String details,
     required String title,
-    required Color color}) {
+    required Color color,
+    required Categories category}) {
   if (details.isNotEmpty && title.isNotEmpty) {
     store.dispatch(
       AddItemAction(
         item: Item(
+          category: category,
           createdAt: DateTime.now(),
           title: title,
           details: details,
@@ -145,6 +147,13 @@ void editTodo(
     required String title,
     required int index}) {
   store.dispatch(EditItemAction(index: index, title: title, details: details));
+}
+
+void deleteTodo(
+    {required BuildContext context,
+    required Store<AppState> store,
+    required int index}) {
+  store.dispatch(RemoveAction(index: index));
 }
 // List<Item> fetchUserTodos({  required BuildContext context,
 //   required Store<AppState> store,

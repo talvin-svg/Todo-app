@@ -1,5 +1,4 @@
 import 'package:todo_new/list/actions/todo_action.dart';
-import 'package:todo_new/list/state.dart';
 
 class AddItemAction extends TodoAction {
   final dynamic item;

@@ -25,9 +25,6 @@ class TodoManager extends StatefulWidget {
   State<TodoManager> createState() => _TodoManagerState();
 }
 
-List<String> options = ['Edit', 'Delete'];
-String selectedOption = 'Edit';
-
 class _TodoManagerState extends State<TodoManager> {
   @override
   Widget build(BuildContext context) {
@@ -41,7 +38,7 @@ class _TodoManagerState extends State<TodoManager> {
             borderRadius: BorderRadius.circular(30),
           ),
           width: MediaQuery.of(context).size.width - 15,
-          height: 130,
+          height: 100,
           child: Padding(
             padding: const EdgeInsets.all(14.0),
             child: Column(
@@ -49,10 +46,13 @@ class _TodoManagerState extends State<TodoManager> {
               children: [
                 Row(
                   children: [
-                    AppText(
-                      text: widget.title,
-                      fontSize: 25,
-                      fontWeight: FontWeight.normal,
+                    Expanded(
+                      child: AppText(
+                        text: widget.title,
+                        fontSize: 25,
+                        fontWeight: FontWeight.normal,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     const SizedBox(
                       width: 10.0,

@@ -80,6 +80,7 @@ class _HompePageTooState extends State<HompePageToo> {
                           final item = controller.text;
                           vm.store.dispatch(AddItemAction(
                               item: Item(
+                                  category: Categories.work,
                                   createdAt: DateTime.now(),
                                   title: item,
                                   color: Colors.yellow,

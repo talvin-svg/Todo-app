@@ -4,6 +4,13 @@ import 'package:todo_new/list/state.dart';
 
 import 'package:redux/redux.dart';
 
+Reducer<ItemListState> itemsReducer = combineReducers<ItemListState>([
+  TypedReducer<ItemListState, AddItemAction>(addItemReducer),
+  TypedReducer<ItemListState, RemoveAction>(removeItemReducer),
+  TypedReducer<ItemListState, ToggleItemSelection>(toggleItemSelectionReducer),
+  TypedReducer<ItemListState, EditItemAction>(editItemReducer),
+]);
+
 ItemListState addItemReducer(
     ItemListState previousItems, AddItemAction action) {
   var newItems =
@@ -35,10 +42,3 @@ ItemListState editItemReducer(
       .replaceRange(action.index, action.index + 1, [modifiedItem]);
   return previousItems;
 }
-
-Reducer<ItemListState> itemsReducer = combineReducers<ItemListState>([
-  TypedReducer<ItemListState, AddItemAction>(addItemReducer),
-  TypedReducer<ItemListState, RemoveAction>(removeItemReducer),
-  TypedReducer<ItemListState, ToggleItemSelection>(toggleItemSelectionReducer),
-  TypedReducer<ItemListState, EditItemAction>(editItemReducer),
-]);
