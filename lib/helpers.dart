@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:todo_new/list/model.dart';
 
 String getDayOfTheWeek() {
   return weeks[DateTime.now().weekday - 1];
@@ -24,3 +25,8 @@ bool isMorning() {
   const morningThreshold = TimeOfDay(hour: 12, minute: 0);
   return now.hour < morningThreshold.hour;
 }
+  List<Categories> category = [
+    Categories.personal,
+    Categories.urgent,
+    Categories.work
+  ];

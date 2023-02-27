@@ -155,6 +155,13 @@ void deleteTodo(
     required int index}) {
   store.dispatch(RemoveAction(index: index));
 }
+
+void completeTodo(
+    {required BuildContext context,
+    required Store<AppState> store,
+    required int index}) {
+  store.dispatch(ToggleItemSelection(index: index));
+}
 // List<Item> fetchUserTodos({  required BuildContext context,
 //   required Store<AppState> store,
 //   required String collectionPath,

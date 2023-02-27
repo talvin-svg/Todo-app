@@ -48,8 +48,9 @@ class _TodoManagerState extends State<TodoManager> {
                   children: [
                     Expanded(
                       child: AppText(
+                        color: Theme.of(context).colorScheme.onBackground,
                         text: widget.title,
-                        fontSize: 25,
+                        fontSize: 20,
                         fontWeight: FontWeight.normal,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -62,7 +63,7 @@ class _TodoManagerState extends State<TodoManager> {
                       text: DateFormat('MMM dd, hh:mm')
                           .format(DateTime.parse(widget.dueDate))
                           .toString(),
-                      color: Colors.black,
+                      color: Theme.of(context).colorScheme.onBackground,
                     ),
                     spaceHorizontal,
                     GestureDetector(onTap: widget.ontap, child: widget.icon)
@@ -70,9 +71,9 @@ class _TodoManagerState extends State<TodoManager> {
                 ),
                 AppText(
                   text: widget.details,
-                  fontSize: 15,
+                  fontSize: 10,
                   fontWeight: FontWeight.normal,
-                  color: Colors.black,
+                  color: Theme.of(context).colorScheme.onBackground,
                 ),
               ],
             ),

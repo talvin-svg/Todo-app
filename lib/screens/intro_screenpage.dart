@@ -32,7 +32,8 @@ class _IntroScreenState extends State<IntroScreen> {
   String currentDay = getDayOfTheWeek();
   bool morning = isMorning();
 
-  int selectedIndex = DateTime.now().weekday - 1;
+  int selectedWeekIndex = DateTime.now().weekday - 1;
+  int selectedCategoryIndex = 0;
   final detailsController = TextEditingController();
   final titleController = TextEditingController();
   final dateController = TextEditingController();
@@ -40,6 +41,7 @@ class _IntroScreenState extends State<IntroScreen> {
   final dialogDetailsController = TextEditingController();
 
   List<String> weeks = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
 
   @override
   void initState() {
@@ -66,25 +68,38 @@ class _IntroScreenState extends State<IntroScreen> {
           leading: GestureDetector(
               onTap: () => Navigator.pop(context),
               child: const Icon(Icons.arrow_back_ios)),
-          actions: const [
-            CircleAvatar(
+          actions: [
+            const CircleAvatar(
               backgroundColor: Colors.black45,
               child: Icon(
                 Icons.notifications,
                 color: Colors.white,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 5,
             ),
             CircleAvatar(
               backgroundColor: Colors.black45,
-              child: Icon(
-                Icons.add,
-                color: Colors.white,
+              child: GestureDetector(
+                onTap: () {
+                  showModalBottomSheet(
+                      constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height * 0.9),
+                      isScrollControlled: true,
+                      backgroundColor: Colors.black,
+                      context: context,
+                      builder: (context) {
+                        return const TodoForm();
+                      });
+                },
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.white,
+                ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 5,
             ),
           ]),
@@ -102,7 +117,9 @@ class _IntroScreenState extends State<IntroScreen> {
         child: StoreConnector<AppState, _ViewModel>(
           converter: (store) => _ViewModel(context: context, store: store),
           builder: (context, vm) {
-            List<Item> items = vm.filteredByDay(weeks[selectedIndex]);
+            List<Item> items = (onTaskSelected)
+                ? vm.filteredByDay(weeks[selectedWeekIndex])
+                : vm.filteredByCategory(category[selectedCategoryIndex]);
             return ListView(
               children: [
                 const SizedBox(
@@ -183,58 +200,63 @@ class _IntroScreenState extends State<IntroScreen> {
                     itemBuilder: (context, index) {
                       final item = items[index];
 
-                      return Padding(
-                          padding: const EdgeInsets.all(1),
-                          child: Dismissible(
-                            background: const CustomDismissedContainer(
-                              color: Colors.red,
-                              icon: Icons.delete,
-                              isDelete: true,
-                            ),
-                            onDismissed: (direction) {
-                              deleteTodo(
-                                  context: context,
-                                  store: vm.store,
-                                  index: index);
-                              previewSuccess(
-                                  message: 'Todo was successfully deleted',
-                                  context: context);
-                            },
-                            key: PageStorageKey(item),
-                            child: TodoManager(
-                              onclick: () {
-                                showModalBottomSheet(
-                                    constraints: BoxConstraints(
-                                        maxHeight:
-                                            MediaQuery.of(context).size.height *
+                      return (onTaskSelected == true)
+                          ? Padding(
+                              padding: const EdgeInsets.all(1),
+                              child: Dismissible(
+                                background: const CustomDismissedContainer(
+                                  color: Colors.red,
+                                  icon: Icons.delete,
+                                  isDelete: true,
+                                ),
+                                onDismissed: (direction) {
+                                  deleteTodo(
+                                      context: context,
+                                      store: vm.store,
+                                      index: index);
+                                  previewSuccess(
+                                      message: 'Todo was successfully deleted',
+                                      context: context);
+                                },
+                                key: PageStorageKey(item),
+                                child: TodoManager(
+                                  onclick: () {
+                                    showModalBottomSheet(
+                                        constraints: BoxConstraints(
+                                            maxHeight: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
                                                 0.7),
-                                    isScrollControlled: true,
-                                    context: context,
-                                    builder: (context) => SizedBox(
-                                          child: ViewTodoScreen(
-                                              category: item.category!,
-                                              backgroundColor: item.color!,
-                                              title: item.title!,
-                                              description: item.details!,
-                                              dueDate: item.dueDate!,
-                                              createdAt: item.createdAt,
-                                              timeLeft: 'timeLeft'),
-                                        ));
-                              },
-                              color: item.color!,
-                              title: item.title!,
-                              ontap: () {
-                                editor(context, vm.store, index);
-                              },
-                              details: item.details!,
-                              dueDate: item.dueDate?.toIso8601String() ??
-                                  'no time alloted',
-                              icon: const Icon(
-                                Icons.more_horiz_rounded,
-                                color: Colors.black,
+                                        isScrollControlled: true,
+                                        context: context,
+                                        builder: (context) => SizedBox(
+                                                child: ViewTodoScreen(
+                                              item: item,
+                                            )));
+                                  },
+                                  color: item.color!,
+                                  title: item.title!,
+                                  ontap: () {
+                                    editor(context, vm.store, index);
+                                  },
+                                  details: item.details!,
+                                  dueDate: item.dueDate?.toIso8601String() ??
+                                      'no time alloted',
+                                  icon: Icon(
+                                    Icons.more_horiz_rounded,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onBackground,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ));
+                            )
+                          : const SizedBox(
+                              child: AppText(
+                                text: 'Board',
+                                fontSize: 50,
+                              ),
+                            );
                     }),
               ],
             );
@@ -467,14 +489,14 @@ class _IntroScreenState extends State<IntroScreen> {
           child: GestureDetector(
             onTap: () {
               setState(() {
-                selectedIndex = index;
+                selectedWeekIndex = index;
               });
             },
             child: SizedBox(
               child: Center(
                 child: AppText(
                   text: weeks[index],
-                  color: (selectedIndex == index)
+                  color: (selectedWeekIndex == index)
                       ? Colors.white
                       : Colors.white.withOpacity(0.3),
                 ),
@@ -484,7 +506,7 @@ class _IntroScreenState extends State<IntroScreen> {
         );
       });
     } else {
-      null;
+      return null;
     }
   }
 
