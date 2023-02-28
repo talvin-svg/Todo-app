@@ -2,13 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:todo_new/async_actions.dart';
+import 'package:todo_new/components/app_text.dart';
+import 'package:todo_new/components/app_text_input_field.dart';
+import 'package:todo_new/components/custom_button.dart';
 import 'package:todo_new/components/scaffold_error_message.dart';
+import 'package:todo_new/screens/intro_screenpage.dart';
 import 'package:todo_new/screens/signup.dart';
-import '../components/custom_button.dart';
-import '/components/app_text_input_field.dart';
-import '../components/app_text.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
-import 'homepage_revamped.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -129,7 +130,7 @@ class _SignInPageState extends State<SignInPage> {
   void finishSignin() {
     Future.delayed(const Duration(seconds: 4), (() {
       (onSuccess)
-          ? Navigator.pushNamed(context, HompePageToo.id)
+          ? Navigator.pushNamed(context, IntroScreen.id)
           : previewError(
               message: 'Account could not be signed into at this time',
               context: context);

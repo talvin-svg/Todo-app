@@ -4,10 +4,10 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 import 'package:todo_new/Appstate/reducer.dart';
 import 'package:todo_new/components/theme/theme_constansts.dart';
-import 'package:todo_new/screens/homepage_revamped.dart';
+
 import 'package:todo_new/screens/intro_screenpage.dart';
 import 'package:todo_new/screens/signin.dart';
-import 'package:todo_new/screens/todo_review.dart';
+
 import '/screens/signup.dart';
 import '/screens/welcome_screen.dart';
 import 'Appstate/appstate.dart';
@@ -49,8 +49,6 @@ class MyApp extends StatelessWidget {
           WelcomeScreen.id: (context) => const WelcomeScreen(),
           SignUpPage.id: (context) => const SignUpPage(),
           SignInPage.id: (context) => const SignInPage(),
-          HompePageToo.id: (context) => const HompePageToo(),
-          TodoReview.id: (context) => const TodoReview(),
           IntroScreen.id: (context) => const IntroScreen(),
         },
         title: 'Flutter Demo',

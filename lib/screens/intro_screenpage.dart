@@ -18,6 +18,7 @@ import 'package:todo_new/list/selectors.dart';
 import 'package:todo_new/list/state.dart';
 import 'package:todo_new/screens/todo_form.dart';
 import 'package:todo_new/screens/view_todo_screen.dart';
+import 'package:todo_new/screens/welcome_screen.dart';
 
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
@@ -65,7 +66,10 @@ class _IntroScreenState extends State<IntroScreen> {
           elevation: 0,
           backgroundColor: Colors.transparent,
           leading: GestureDetector(
-              onTap: () => Navigator.pop(context),
+              onTap: () {
+                signOut();
+                Navigator.pushNamed(context, WelcomeScreen.id);
+              },
               child: const Icon(Icons.arrow_back_ios)),
           actions: [
             const CircleAvatar(

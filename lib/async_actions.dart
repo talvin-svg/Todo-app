@@ -60,7 +60,8 @@ import 'package:todo_new/Appstate/reducer.dart';
 import 'package:todo_new/firestore/firestore.dart';
 import 'package:todo_new/list/actions/actions.dart';
 import 'package:todo_new/list/state.dart';
-import 'package:todo_new/screens/homepage_revamped.dart';
+
+import 'package:todo_new/screens/intro_screenpage.dart';
 
 import 'components/scaffold_error_message.dart';
 import 'components/text_field_validator.dart';
@@ -95,7 +96,7 @@ Future signIn(
 
     Future.delayed(const Duration(seconds: 4), (() {
       (onSuccess)
-          ? Navigator.pushNamed(context, HompePageToo.id)
+          ? Navigator.pushNamed(context, IntroScreen.id)
           : previewError(
               message: 'Account could not be created at this time',
               context: context);
