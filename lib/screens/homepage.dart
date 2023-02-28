@@ -1,273 +1,301 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:flutter/rendering.dart';
+// import 'package:flutter_redux/flutter_redux.dart';
+// import 'package:todo_new/components/scaffold_error_message.dart';
+// import 'package:todo_new/components/todo_manager.dart';
+// import 'package:todo_new/reducers/reducer.dart';
+// import 'package:todo_new/screens/signup.dart';
+// import '../async_actions.dart';
+// import '../components/dismissed_container.dart';
+// import '/actions/actions.dart';
+// import 'package:redux/redux.dart';
+// import '/Appstate/appstate.dart';
+// import '/components/my_button.dart';
+// import '/model/model.dart';
+// import '/components/text_card.dart';
+// import 'package:flutter/material.dart';
 
-import 'package:flutter_redux/flutter_redux.dart';
-import 'package:todo_new/components/app_text.dart';
-import 'package:todo_new/components/custom_button.dart';
-import 'package:todo_new/components/scaffold_error_message.dart';
-import 'package:todo_new/components/todo_manager.dart';
+// class MyHomePage extends StatefulWidget {
+//   static const String id = 'homy';
+//   const MyHomePage({
+//     Key? key,
+//     required this.store,
+//   }) : super(key: key);
 
-import 'package:todo_new/screens/signup.dart';
-import '../async_actions.dart';
-import '../components/dismissed_container.dart';
-import '/actions/actions.dart';
-import '/reducers/reducer.dart';
-import 'package:redux/redux.dart';
-import '/Appstate/appstate.dart';
-import '/components/my_button.dart';
-import '/model/model.dart';
-import '/components/text_card.dart';
-import 'package:flutter/material.dart';
+//   final Store<AppState> store;
 
-class MyHomePage extends StatefulWidget {
-  static const String id = 'homy';
-  const MyHomePage({
-    Key? key,
-    required Store<AppState> store,
-  }) : super(key: key);
+//   @override
+//   State<MyHomePage> createState() => _MyHomePageState();
+// }
 
-  final store = Store<AppState>;
+// class _MyHomePageState extends State<MyHomePage> {
+//   bool isCompleted = false;
+//   late bool result;
+//   final _dialogController = TextEditingController();
+//   final _dialogOnConfirmController = TextEditingController();
+//   final CollectionReference users =
+//       FirebaseFirestore.instance.collection('Users');
+//   final CollectionReference todosInstance =
+//       FirebaseFirestore.instance.collection('todos');
+//   Stream<QuerySnapshot> fireStream =
+//       FirebaseFirestore.instance.collection('todos').snapshots();
+//   var firebaseUser = FirebaseAuth.instance.currentUser;
+//   void _navigateToSignUpPage() {
+//     debugPrint("Navigating to SignUpPage...");
+//     Navigator.pushNamed(context, SignUpPage.id);
+//   }
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
+//   @override
+//   void dispose() {
+//     _dialogController.dispose();
+//     _dialogOnConfirmController.dispose();
+//     super.dispose();
+//   }
 
-class _MyHomePageState extends State<MyHomePage> {
-  late bool result;
-  final _dialogController = TextEditingController();
-  final _dialogOnConfirmController = TextEditingController();
-  final CollectionReference users =
-      FirebaseFirestore.instance.collection('users');
-  void _navigateToSignUpPage() {
-    debugPrint("Navigating to SignUpPage...");
-    Navigator.pushNamed(context, SignUpPage.id);
-  }
+//   Stream<List<Item>> readTodos() => FirebaseFirestore.instance
+//       .collection("todos")
+//       .orderBy('createdAt')
+//       .snapshots()
+//       .map((snapshot) =>
+//           snapshot.docs.map((doc) => Item.fromMap(doc.data())).toList());
 
-  @override
-  void initState() {
-    super.initState();
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if (user != null) {
-        print(user.uid);
-      }
-    });
-  }
+//   addToList(Store<AppState> store) {
+//     final enteredtitle = _dialogController.text;
+//     if (enteredtitle.isEmpty) {
+//       return;
+//     }
+//     print('before update, ${store.state.itemListState.length}');
+//     // list.add(x);
+//     store.dispatch(AddItemAction(item: Item(title: enteredtitle)));
+//     TodoManager.notCompletedCounter++;
 
-  @override
-  void dispose() {
-    _dialogController.dispose();
-    _dialogOnConfirmController.dispose();
-    super.dispose();
-  }
+//     print(
+//         'after update,  ${store.state.itemListState.last.title} , ${store.state.itemListState.length}');
+//   }
 
-  addToList(Store<AppState> store) {
-    final enteredtitle = _dialogController.text;
-    if (enteredtitle.isEmpty) {
-      return;
-    }
-    print('before update, ${store.state.itemListState.length}');
-    // list.add(x);
-    store.dispatch(AddItemAction(item: Item(title: enteredtitle)));
-    TodoManager.notCompletedCounter++;
+//   Future createTodo(Item item) async {
+//     final docTodo = FirebaseFirestore.instance.collection("todos").doc();
+//     item.id = docTodo.id;
+//     final json = item.toMap();
+//     await docTodo.set(json);
+//     print(item.id);
+//   }
 
-    print(
-        'after update,  ${store.state.itemListState.last.title} , ${store.state.itemListState.length}');
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//         home: StoreConnector<AppState, _ViewModel>(
+//       converter: ((store) => _ViewModel(context: context, store: store)),
+//       builder: (BuildContext context, _ViewModel viewModel) {
+//         return Scaffold(
+//           appBar: AppBar(
+//             leading: MyButton(
+//               name: 'back',
+//               color: Colors.teal,
+//               ontap: () async {
+//                 try {
+//                   await signOut();
+//                   _navigateToSignUpPage();
+//                 } catch (e) {
+//                   print(e);
+//                 }
+//               },
+//             ),
+//             title: const Text('create todo'),
+//           ),
+//           body: StreamBuilder<List<Item>>(
+//               stream: readTodos(),
+//               builder: (context, snapshot) {
+//                 if (!snapshot.hasData) {
+//                   return const Center(child: CircularProgressIndicator());
+//                 }
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: StoreConnector<AppState, _ViewModel>(
-          converter: ((store) => _ViewModel(context: context, store: store)),
-          builder: (BuildContext context, _ViewModel viewModel) => Scaffold(
-                appBar: AppBar(
-                  leading: MyButton(
-                    name: 'back',
-                    color: Colors.teal,
-                    ontap: () async {
-                      try {
-                        await signOut();
-                        _navigateToSignUpPage();
-                      } catch (e) {
-                        print(e);
-                      }
-                    },
-                  ),
-                  title: const Text('create todo'),
-                ),
-                body: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 500,
-                        child: ListView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: viewModel.store.state.itemListState.length,
-                          itemBuilder: ((context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Dismissible(
-                                // direction: DismissDirection.endToStart,
-                                resizeDuration: const Duration(seconds: 1),
-                                direction: DismissDirection.endToStart,
-                                background: const CustomDismissedContainer(
-                                    isDelete: true,
-                                    color: Colors.red,
-                                    icon: Icons.delete),
-                                onDismissed: (direction) {
-                                  print(
-                                      'before deletion ${viewModel.store.state.itemListState.length}');
-                                  TodoManager.completedCounter--;
-                                  viewModel.store
-                                      .dispatch(RemoveAction(index: index));
-                                  print(
-                                      'after deletion ${viewModel.store.state.itemListState.length},  ${viewModel.store.state.itemListState.last.title} ');
-                                  previewSuccess(
-                                      message: 'todo item deleted',
-                                      context: context);
-                                },
-                                key: PageStorageKey(
-                                    viewModel.store.state.itemListState[index]),
-                                child: TextCard(
-                                  iconSecondary: Icons.edit,
-                                  ontapIconSecondary: () {
-                                    editDialog(context, index, viewModel.store);
-                                  },
-                                  time: viewModel.store.state
-                                          .itemListState[index].createdAt.year
-                                          .toString() +
-                                      viewModel.store.state.itemListState[index]
-                                          .createdAt.month
-                                          .toString(),
-                                  todoName:
-                                      '${viewModel.store.state.itemListState[index].title}',
-                                  icon: viewModel
-                                          .store.state.itemListState[index].done
-                                      ? Icons.check_circle_outline_outlined
-                                      : Icons.circle_outlined,
-                                  ontapIcon: () {
-                                    setState(() {});
-                                    viewModel.store.dispatch(
-                                        ToggleItemSelection(index: index));
-                                    (viewModel.store.state.itemListState[index]
-                                                .done ==
-                                            true)
-                                        ? TodoManager.completedCounter++
-                                        : TodoManager.completedCounter--;
-                                    (viewModel.store.state.itemListState[index]
-                                                .done ==
-                                            false)
-                                        ? TodoManager.notCompletedCounter++
-                                        : TodoManager.notCompletedCounter--;
-                                  },
-                                  color: viewModel.store.state
-                                              .itemListState[index].done ==
-                                          false
-                                      ? Colors.red
-                                      : Colors.green,
-                                ),
-                              ),
-                            );
-                          }),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      TodoManager(
-                        text: '${TodoManager.completedCounter}',
-                        color: Colors.green,
-                        title: 'Completed',
-                        icon: Icons.price_check_outlined,
-                        isCompleted: true,
-                      ),
-                      TodoManager(
-                        text: '${TodoManager.notCompletedCounter}',
-                        color: Colors.red,
-                        title: 'In Progress',
-                        icon: Icons.hourglass_bottom,
-                        isCompleted: true,
-                      )
-                    ],
-                  ),
-                ),
-                floatingActionButton: FloatingActionButton(
-                  onPressed: () {
-                    _dialog(context, viewModel.store);
-                  },
-                  tooltip: 'add todo',
-                  child: const Icon(Icons.add),
-                ),
-              )),
-    );
-  }
+//                 if (snapshot.hasError) {
+//                   return const Center(
+//                     child: Text('Error with code'),
+//                   );
+//                 }
 
-  Future<dynamic> editDialog(
-      BuildContext context, int index, Store<AppState> store) {
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Edit Todo'),
-            content: TextField(
-              controller: _dialogOnConfirmController,
-            ),
-            actions: [
-              MyButton(
-                  name: 'change',
-                  color: Colors.teal,
-                  ontap: () {
-                    String entry = _dialogOnConfirmController.text;
-                    if (entry.isEmpty) {
-                      return;
-                    } else {
-                      store.dispatch(EditItemAction(
-                          index: index, name: _dialogOnConfirmController.text));
-                    }
-                    print(
-                        'after update,  ${store.state.itemListState.last.title}');
-                    setState(() {
-                      _dialogOnConfirmController.text = '';
-                    });
-                    Navigator.pop(context);
-                  }),
-            ],
-          );
-        });
-  }
+//                 print(snapshot.data!);
+//                 final todoItems = snapshot.data!;
+//                 // List<dynamic> list = viewModel.store.state.itemListState;
 
-  Future<dynamic> _dialog(BuildContext context, Store<AppState> store) {
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Enter new Todo'),
-            content: TextField(
-              controller: _dialogController,
-            ),
-            actions: [
-              MyButton(
-                  name: 'add',
-                  color: Colors.teal,
-                  ontap: () {
-                    setState(() {
-                      addToList(store);
-                      _dialogController.text = '';
-                    });
-                    Navigator.pop(context);
-                  }),
-            ],
-          );
-        });
-  }
-}
+//                 if (todoItems.isEmpty) {
+//                   return const Center(
+//                     child: Text('Try creating a new todo list!'),
+//                   );
+//                 }
 
-class _ViewModel {
-  final BuildContext context;
-  final Store<AppState> store;
+//                 return ListView.builder(
+//                   itemCount: todoItems.length,
+//                   itemBuilder: (context, index) {
+//                     final onItem = todoItems[index];
+//                     return Padding(
+//                       padding: const EdgeInsets.all(8.0),
+//                       child: Dismissible(
+//                         confirmDismiss: (direction) async {
+//                           return (onItem.done == true);
+//                         },
+//                         direction: DismissDirection.endToStart,
+//                         resizeDuration: const Duration(seconds: 1),
+//                         background: const CustomDismissedContainer(
+//                             color: Colors.red,
+//                             icon: Icons.delete,
+//                             isDelete: true),
+//                         onDismissed: (direction) async {
+//                           print('before deletion ${todoItems.length}');
+//                           TodoManager.completedCounter--;
+//                           // viewModel.store.dispatch(RemoveAction(index: index));
+//                           if (todoItems.isNotEmpty) {
+//                             final doc = FirebaseFirestore.instance
+//                                 .collection('todos')
+//                                 .doc(onItem.id);
 
-  _ViewModel({required this.context, required this.store});
-}
+//                             final docSnapshot = await doc.get();
+//                             if (docSnapshot.exists) {
+//                               doc.delete();
+//                             }
+//                           }
+
+//                           print(
+//                               'after deletion ${todoItems.length},  ${todoItems.last.title}');
+//                           previewSuccess(
+//                               message: 'todo item deleted', context: context);
+//                         },
+//                         key: PageStorageKey(todoItems[index]),
+//                         child: TextCard(
+//                           iconSecondary: Icons.edit,
+//                           todoName: onItem.title ?? 'error getting todo',
+//                           ontapIcon: () async {
+//                             if (todoItems.isNotEmpty) {
+//                               final doc = FirebaseFirestore.instance
+//                                   .collection('todos')
+//                                   .doc(onItem.id);
+//                               print(onItem.done);
+//                               final docSnapshot = await doc.get();
+//                               if (docSnapshot.exists) {
+//                                 doc.update({
+//                                   'done': (onItem.done == true ? false : true)
+//                                 });
+//                                 print(onItem.done);
+//                               }
+
+//                               // viewModel.store
+//                               //     .dispatch(ToggleItemSelection(index: index));
+//                             }
+//                           },
+//                           ontapIconSecondary: () {
+//                             if (todoItems.isNotEmpty) {
+//                               editDialog(context, index, viewModel.store,
+//                                   todoItems[index].id);
+//                             }
+//                           },
+//                           icon: onItem.done == false
+//                               ? Icons.check_circle_outline_outlined
+//                               : Icons.circle_outlined,
+//                           color:
+//                               onItem.done == true ? Colors.green : Colors.red,
+//                         ),
+//                       ),
+//                     );
+//                   },
+//                 );
+//               }),
+//           floatingActionButton: FloatingActionButton(
+//             onPressed: () {
+//               _dialog(context, viewModel.store);
+//             },
+//             tooltip: 'add todo',
+//             child: const Icon(Icons.add),
+//           ),
+//         );
+//       },
+//     ));
+//   }
+
+//   Future<dynamic> editDialog(
+//       BuildContext context, index, Store<AppState> store, String? documentId) {
+//     return showDialog(
+//         context: context,
+//         builder: (BuildContext context) {
+//           return AlertDialog(
+//             title: const Text('Edit Todo'),
+//             content: TextField(
+//               controller: _dialogOnConfirmController,
+//             ),
+//             actions: [
+//               MyButton(
+//                   name: 'change',
+//                   color: Colors.teal,
+//                   ontap: () async {
+//                     firestoreEditTitle(
+//                         documentId, _dialogOnConfirmController.text);
+//                     String entry = _dialogOnConfirmController.text;
+//                     if (entry.isEmpty) {
+//                       return;
+//                     } else {
+//                       // store.dispatch(EditItemAction(
+//                       //     index: index, name: _dialogOnConfirmController.text));
+//                     }
+//                     print(
+//                         'after update,  ${store.state.itemListState.last.title}');
+//                     setState(() {
+//                       _dialogOnConfirmController.text = '';
+//                     });
+//                     Navigator.pop(context);
+//                   }),
+//             ],
+//           );
+//         });
+//   }
+
+//   Future<dynamic> _dialog(BuildContext context, Store<AppState> store) {
+//     return showDialog(
+//         context: context,
+//         builder: (BuildContext context) {
+//           return AlertDialog(
+//             title: const Text('Enter new Todo'),
+//             content: TextField(
+//               controller: _dialogController,
+//             ),
+//             actions: [
+//               MyButton(
+//                   name: 'add',
+//                   color: Colors.teal,
+//                   ontap: () {
+//                     final item = Item(title: _dialogController.text);
+
+//                     // print(firebaseUser!.email);
+
+//                     createTodo(item);
+//                     setState(() {
+//                       addToList(store);
+//                       _dialogController.text = '';
+//                     });
+//                     print(store.state.itemListState.last.title);
+//                     Navigator.pop(context);
+//                   }),
+//             ],
+//           );
+//         });
+//   }
+
+//   void firestoreEditTitle(String? documentId, String newTodo) async {
+//     final doc = FirebaseFirestore.instance.collection('todos').doc(documentId);
+
+//     final docData = await doc.get();
+
+//     if (docData.exists) {
+//       doc.update({'title': newTodo});
+//     }
+//   }
+// }
+
+// class _ViewModel {
+//   final BuildContext context;
+//   final Store<AppState> store;
+
+//   _ViewModel({required this.context, required this.store});
+// }

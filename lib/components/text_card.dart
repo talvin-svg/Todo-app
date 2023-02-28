@@ -15,7 +15,7 @@ class TextCard extends StatelessWidget {
       required this.color})
       : super(key: key);
 
-  final String todoName;
+  final String? todoName;
   final String? time;
   final IconData icon;
   final VoidCallback ontapIcon;
@@ -23,7 +23,9 @@ class TextCard extends StatelessWidget {
   final VoidCallback ontapIconSecondary;
   final Color color;
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     return Container(
       width: 400,
       height: 100,

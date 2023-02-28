@@ -2,15 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:todo_new/async_actions.dart';
-import 'package:todo_new/components/constants.dart';
 import 'package:todo_new/components/scaffold_error_message.dart';
-import 'package:todo_new/screens/homepage.dart';
 import 'package:todo_new/screens/signup.dart';
 import '../components/custom_button.dart';
-import '../components/text_field_validator.dart';
 import '/components/app_text_input_field.dart';
 import '../components/app_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'homepage_revamped.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -29,44 +27,6 @@ class _SignInPageState extends State<SignInPage> {
   final _formKey = GlobalKey<FormState>();
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-  // void loginUser(String email, String password) async {
-  //   if (!isLoginFieldsValid(_emailController, _passwordController)) {
-  //     previewError(
-  //         context: context, message: 'Fields not filled in correctly!');
-  //     return;
-  //   }
-  //   await signOut();
-  //   try {
-  //     result = await firebaseAuth.signInWithEmailAndPassword(
-  //         email: email, password: password);
-  //     String user = result.user!.uid;
-
-  //     setState(() {
-  //       onSuccess = true;
-  //     });
-  //     previewSuccess(
-  //         message: 'Welcome Back!, Lets get to work', context: context);
-
-  //     Future.delayed(const Duration(seconds: 4), (() {
-  //       (onSuccess)
-  //           ? Navigator.pushNamed(context, MyHomePage.id)
-  //           : previewError(
-  //               message: 'Account could not be created at this time',
-  //               context: context);
-  //     }));
-  //     return;
-  //   } catch (e) {
-  //     print(e.toString());
-  //     return;
-  //   }
-  // }
-
-  Future<UserCredential> _signIn(
-      String email, String password, BuildContext context) async {
-    UserCredential user = await signIn(email, password, context);
-    return user;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -126,8 +86,10 @@ class _SignInPageState extends State<SignInPage> {
                     CustomButton(
                         title: "Sign In",
                         ontap: () {
-                          _signIn(_emailController.text,
-                              _passwordController.text, context);
+                          signIn(
+                              email: _emailController.text,
+                              password: _passwordController.text,
+                              context: context);
                         },
                         color: Colors.blue),
                     const SizedBox(
@@ -161,13 +123,13 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   void routeToSignup() {
-    if (onSuccess) Navigator.pushNamed(context, SignUpPage.id);
+    Navigator.pushNamed(context, SignUpPage.id);
   }
 
   void finishSignin() {
     Future.delayed(const Duration(seconds: 4), (() {
       (onSuccess)
-          ? Navigator.pushNamed(context, MyHomePage.id)
+          ? Navigator.pushNamed(context, HompePageToo.id)
           : previewError(
               message: 'Account could not be signed into at this time',
               context: context);

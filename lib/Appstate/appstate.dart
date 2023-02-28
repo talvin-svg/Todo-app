@@ -1,28 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:todo_new/list/model.dart';
+import 'package:todo_new/list/state.dart';
+import 'package:todo_new/loading/state.dart';
 
-import '../model/model.dart';
-
+@immutable
 class AppState {
-  // List itemListState = <Item>[];
-  final List<dynamic> itemListState;
+  const AppState(
+      {this.loadingState = const LoadingState(),
+      this.itemListState = const ItemListState(),
+      this.filter = ItemFilter.all});
 
-  const AppState({this.itemListState = const []});
+  final ItemListState itemListState;
+  final LoadingState loadingState;
+  final ItemFilter filter;
 
   factory AppState.initial() => const AppState();
 
-  AppState copyWith(itemListState) {
-    return AppState(itemListState: itemListState ?? this.itemListState);
-  }
-
-  factory AppState.fromMap(Map<String, dynamic>? data) {
-    if (data == null) return AppState.initial();
-
-    List<dynamic> itemListState = <dynamic>[];
-    if (data['todos'] != null) {
-      data['todos'].forEach((todoData) {
-        itemListState.add(Item.fromMap(todoData));
-      });
+  List<Item> get filteredItems {
+    switch (filter) {
+      case ItemFilter.all:
+        return itemListState.itemList;
+      case ItemFilter.done:
+        return itemListState.itemList.where((e) => e.done == true).toList();
+      case ItemFilter.active:
+        return itemListState.itemList.where((e) => e.done == false).toList();
     }
-    return AppState(itemListState: itemListState);
   }
 }
