@@ -29,8 +29,8 @@ class _TodoFormState extends State<TodoForm> {
   int selectedIndex = 0;
 
   List<Color> todoColors = [
-    Colors.yellow,
-    Colors.green,
+    Colors.indigo.shade100,
+    Colors.orange.shade300,
     Colors.purple,
     Colors.pink
   ];
@@ -100,7 +100,8 @@ class _TodoFormState extends State<TodoForm> {
                               context: context,
                               details: detailsController.text,
                               title: titleController.text,
-                              color: _selectedColor ?? Colors.white);
+                              color: _selectedColor ??
+                                  Theme.of(context).colorScheme.secondary);
 
                           Navigator.pop(context);
                         },
@@ -139,6 +140,8 @@ class _TodoFormState extends State<TodoForm> {
                       ),
                       spaceVertical,
                       DateTimePicker(
+                        type: DateTimePickerType.dateTimeSeparate,
+                        timeLabelText: 'Time',
                         controller: dateController,
                         firstDate: DateTime(2000),
                         lastDate: DateTime(2100),

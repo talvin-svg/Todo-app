@@ -25,8 +25,9 @@ bool isMorning() {
   const morningThreshold = TimeOfDay(hour: 12, minute: 0);
   return now.hour < morningThreshold.hour;
 }
-  List<Categories> category = [
-    Categories.personal,
-    Categories.urgent,
-    Categories.work
-  ];
+
+List<Categories> category = [
+  Categories.urgent,
+  Categories.personal,
+  Categories.work
+];

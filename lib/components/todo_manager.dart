@@ -10,16 +10,20 @@ class TodoManager extends StatefulWidget {
       required this.title,
       this.onclick,
       this.ontap,
-      required this.icon,
+      this.completed,
+      this.iconMore,
+      required this.categoryIcon,
       required this.details,
       required this.dueDate});
   final Color color;
   final String title;
   final void Function()? ontap;
   final void Function()? onclick;
-  final Icon icon;
-  final String details;
+  final Icon? iconMore;
+  final Icon categoryIcon;
+  final String? details;
   final String dueDate;
+  final String? completed;
 
   @override
   State<TodoManager> createState() => _TodoManagerState();
@@ -46,17 +50,16 @@ class _TodoManagerState extends State<TodoManager> {
               children: [
                 Row(
                   children: [
-                    Expanded(
-                      child: AppText(
-                        color: Theme.of(context).colorScheme.onBackground,
-                        text: widget.title,
-                        fontSize: 20,
-                        fontWeight: FontWeight.normal,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
+                    widget.categoryIcon,
                     const SizedBox(
                       width: 10.0,
+                    ),
+                    AppText(
+                      color: Theme.of(context).colorScheme.onBackground,
+                      text: widget.title,
+                      fontSize: 20,
+                      fontWeight: FontWeight.normal,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     Expanded(child: Container()),
                     AppText(
@@ -66,14 +69,26 @@ class _TodoManagerState extends State<TodoManager> {
                       color: Theme.of(context).colorScheme.onBackground,
                     ),
                     spaceHorizontal,
-                    GestureDetector(onTap: widget.ontap, child: widget.icon)
+                    GestureDetector(onTap: widget.ontap, child: widget.iconMore)
                   ],
                 ),
-                AppText(
-                  text: widget.details,
-                  fontSize: 10,
-                  fontWeight: FontWeight.normal,
-                  color: Theme.of(context).colorScheme.onBackground,
+                Row(
+                  children: [
+                    const SizedBox(
+                      width: 35.0,
+                    ),
+                    AppText(
+                      text: widget.details,
+                      fontSize: 13,
+                      fontWeight: FontWeight.normal,
+                      color: Theme.of(context).colorScheme.onBackground,
+                    ),
+                    Expanded(child: Container()),
+                    AppText(
+                      text: widget.completed,
+                      color: const Color.fromARGB(255, 12, 232, 23),
+                    )
+                  ],
                 ),
               ],
             ),

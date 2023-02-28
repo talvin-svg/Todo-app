@@ -42,7 +42,6 @@ class _IntroScreenState extends State<IntroScreen> {
 
   List<String> weeks = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-
   @override
   void initState() {
     super.initState();
@@ -117,9 +116,8 @@ class _IntroScreenState extends State<IntroScreen> {
         child: StoreConnector<AppState, _ViewModel>(
           converter: (store) => _ViewModel(context: context, store: store),
           builder: (context, vm) {
-            List<Item> items = (onTaskSelected)
-                ? vm.filteredByDay(weeks[selectedWeekIndex])
-                : vm.filteredByCategory(category[selectedCategoryIndex]);
+            List<Item> items = vm.filteredByDay(weeks[selectedWeekIndex]);
+
             return ListView(
               children: [
                 const SizedBox(
@@ -144,7 +142,9 @@ class _IntroScreenState extends State<IntroScreen> {
                           color: Theme.of(context).colorScheme.onBackground),
                       Expanded(child: Container()),
                       AppText(
-                          text: '75% Done',
+                          text: (vm.complete() == 0)
+                              ? '0 %'
+                              : '${(vm.complete() / (vm.complete() + vm.notComplete()) * 100).round()}%',
                           fontSize: 15,
                           color: Theme.of(context).colorScheme.onBackground),
                     ],
@@ -193,71 +193,137 @@ class _IntroScreenState extends State<IntroScreen> {
                 const SizedBox(
                   height: 20,
                 ),
-                ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      final item = items[index];
+                (onTaskSelected)
+                    ? ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: items.length,
+                        itemBuilder: (context, index) {
+                          final item = items[index];
 
-                      return (onTaskSelected == true)
-                          ? Padding(
-                              padding: const EdgeInsets.all(1),
-                              child: Dismissible(
-                                background: const CustomDismissedContainer(
-                                  color: Colors.red,
-                                  icon: Icons.delete,
-                                  isDelete: true,
-                                ),
-                                onDismissed: (direction) {
-                                  deleteTodo(
+                          return Padding(
+                            padding: const EdgeInsets.all(1),
+                            child: Dismissible(
+                              background: const CustomDismissedContainer(
+                                color: Colors.red,
+                                icon: Icons.delete,
+                                isDelete: true,
+                              ),
+                              onDismissed: (direction) {
+                                deleteTodo(
+                                    context: context,
+                                    store: vm.store,
+                                    index: index);
+                                previewSuccess(
+                                    message: 'Todo was successfully deleted',
+                                    context: context);
+                              },
+                              key: PageStorageKey(item),
+                              child: TodoManager(
+                                onclick: () {
+                                  showModalBottomSheet(
+                                      constraints: BoxConstraints(
+                                          maxHeight: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.7),
+                                      isScrollControlled: true,
                                       context: context,
-                                      store: vm.store,
-                                      index: index);
-                                  previewSuccess(
-                                      message: 'Todo was successfully deleted',
-                                      context: context);
+                                      builder: (context) => SizedBox(
+                                              child: ViewTodoScreen(
+                                            item: item,
+                                          )));
                                 },
-                                key: PageStorageKey(item),
-                                child: TodoManager(
-                                  onclick: () {
-                                    showModalBottomSheet(
-                                        constraints: BoxConstraints(
-                                            maxHeight: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.7),
-                                        isScrollControlled: true,
-                                        context: context,
-                                        builder: (context) => SizedBox(
-                                                child: ViewTodoScreen(
-                                              item: item,
-                                            )));
-                                  },
-                                  color: item.color!,
-                                  title: item.title!,
-                                  ontap: () {
-                                    editor(context, vm.store, index);
-                                  },
-                                  details: item.details!,
-                                  dueDate: item.dueDate?.toIso8601String() ??
-                                      'no time alloted',
-                                  icon: Icon(
-                                    Icons.more_horiz_rounded,
+                                color: item.color!,
+                                title: item.title!,
+                                ontap: () {
+                                  editor(context, vm.store, index, 'completed');
+                                },
+                                details: item.details!,
+                                dueDate: item.dueDate?.toIso8601String() ??
+                                    'no time alloted',
+                                categoryIcon: iconSelector(item.category!),
+                                iconMore: Icon(
+                                  Icons.more_horiz_rounded,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground,
+                                ),
+                                completed:
+                                    (item.done == true) ? 'Completed' : null,
+                              ),
+                            ),
+                          );
+                        })
+                    : Column(
+                        children: category.map((category) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: GestureDetector(
+                              child: Container(
+                                width: MediaQuery.of(context).size.width - 30,
+                                height: 100,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
                                     color: Theme.of(context)
                                         .colorScheme
-                                        .onBackground,
+                                        .secondary),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          iconSelector(category),
+                                          const SizedBox(
+                                            width: 5,
+                                          ),
+                                          AppText(
+                                            text: categorySeletor(category),
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onBackground,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          Expanded(child: Container()),
+                                          const Icon(Icons.more_horiz_outlined),
+                                          const SizedBox(
+                                            width: 10,
+                                          )
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
+                                      Row(
+                                        children: [
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          AppText(
+                                              text: (onActiveSelected)
+                                                  ? '${vm.filteredByCategory(category).where((element) => element.done == false).length}'
+                                                  : '${vm.filteredByCategory(category).where((element) => element.done == true).length}'),
+                                          const SizedBox(
+                                            width: 5,
+                                          ),
+                                          AppText(
+                                              text: (onActiveSelected)
+                                                  ? 'Active Tasks'
+                                                  : 'Completed Tasks')
+                                        ],
+                                      )
+                                    ],
                                   ),
                                 ),
                               ),
-                            )
-                          : const SizedBox(
-                              child: AppText(
-                                text: 'Board',
-                                fontSize: 50,
-                              ),
-                            );
-                    }),
+                            ),
+                          );
+                        }).toList(),
+                      )
               ],
             );
           },
@@ -320,7 +386,7 @@ class _IntroScreenState extends State<IntroScreen> {
             decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.onBackground,
                 borderRadius: BorderRadius.circular(10)),
-            child: const Center(child: AppText(text: '3')),
+            child: Center(child: AppText(text: category.length.toString())),
           ),
           const SizedBox(width: 10),
           GestureDetector(
@@ -397,7 +463,7 @@ class _IntroScreenState extends State<IntroScreen> {
                     width: 25,
                     child: Center(
                       child: AppText(
-                        text: '0',
+                        text: category.length.toString(),
                         color: Theme.of(context).colorScheme.onBackground,
                       ),
                     ),
@@ -510,8 +576,8 @@ class _IntroScreenState extends State<IntroScreen> {
     }
   }
 
-  Future<dynamic> editor(
-      BuildContext context, Store<AppState> store, int index) {
+  Future<dynamic> editor(BuildContext context, Store<AppState> store, int index,
+      String completed) {
     return showDialog(
         context: context,
         builder: ((context) {
@@ -521,11 +587,13 @@ class _IntroScreenState extends State<IntroScreen> {
               shape: RoundedRectangleBorder(
                   side: BorderSide.none,
                   borderRadius: BorderRadius.circular(10)),
-              title: AppText(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                text: 'Edit Todo',
-                color: Theme.of(context).colorScheme.onBackground,
+              title: Center(
+                child: AppText(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  text: 'Edit Todo',
+                  color: Theme.of(context).colorScheme.onBackground,
+                ),
               ),
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 10),

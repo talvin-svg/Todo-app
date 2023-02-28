@@ -1,16 +1,19 @@
+import 'package:action_slider/action_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl/intl.dart';
-import 'package:lite_rolling_switch/lite_rolling_switch.dart';
+
 import 'package:redux/redux.dart';
 import 'package:todo_new/Appstate/appstate.dart';
+import 'package:todo_new/async_actions.dart';
 import 'package:todo_new/components/app_text.dart';
 import 'package:todo_new/components/constants.dart';
+
 import 'package:todo_new/list/model.dart';
 import 'package:todo_new/list/selectors.dart';
 
 class ViewTodoScreen extends StatefulWidget {
-  const ViewTodoScreen({super.key, required this.item });
+  const ViewTodoScreen({super.key, required this.item});
 
   final Item item;
 
@@ -19,6 +22,7 @@ class ViewTodoScreen extends StatefulWidget {
 }
 
 class _ViewTodoScreenState extends State<ViewTodoScreen> {
+  bool positive = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,6 +54,8 @@ class _ViewTodoScreenState extends State<ViewTodoScreen> {
           converter: (store) => _ViewModel(store: store, context: context),
           builder: (context, vm) {
             final items = vm.getItems();
+            final itemIndex = items.indexOf(widget.item);
+            final todo = items.elementAt(itemIndex);
             return Padding(
               padding: const EdgeInsets.only(left: 20, right: 20),
               child: SizedBox(
@@ -148,11 +154,7 @@ class _ViewTodoScreenState extends State<ViewTodoScreen> {
                     const SizedBox(
                       height: 20,
                     ),
-                    // LiteRollingSwitch(
-                    //     onTap: () {},
-                    //     onDoubleTap: onDoubleTap,
-                    //     onSwipe: onSwipe,
-                    //     onChanged: onChanged)
+                    markComplete(todo, vm, itemIndex, context),
                   ],
                 ),
               ),
@@ -161,6 +163,35 @@ class _ViewTodoScreenState extends State<ViewTodoScreen> {
         ),
       ),
     );
+  }
+
+  Widget markComplete(
+      Item todo, _ViewModel vm, int itemIndex, BuildContext context) {
+    return (todo.done != true)
+        ? ActionSlider.standard(
+            backgroundColor: Colors.black.withOpacity(0.5),
+            rolling: true,
+            action: (controller) async {
+              if (todo.done != true) {
+                controller.loading();
+                Future.delayed(const Duration(seconds: 2)).then((_) =>
+                    completeTodo(
+                        context: context, store: vm.store, index: itemIndex));
+
+                controller.success();
+              }
+            },
+            child: AppText(
+              text: 'Mark as complete',
+              color: Theme.of(context).colorScheme.onBackground,
+            ),
+          )
+        : const SizedBox(
+            child: AppText(
+              text: 'Completed',
+              color: Color.fromARGB(255, 12, 232, 23),
+            ),
+          );
   }
 
   String dueDateCalculator(DateTime endDate) {
@@ -181,5 +212,5 @@ class _ViewModel {
   final Store<AppState> store;
   final BuildContext context;
 
-  List<Item> getItems () => store.state.itemListState.itemList;
+  List<Item> getItems() => store.state.itemListState.itemList;
 }
