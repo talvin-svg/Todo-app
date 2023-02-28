@@ -1,58 +1,3 @@
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:flutter/material.dart';
-// import 'package:todo_new/screens/welcome_screen.dart';
-// import '../components/scaffold_error_message.dart';
-
-// FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-// class Firestore{
-//   Future createUser({
-//   required String email,
-//   required String password,
-//   required BuildContext context,
-// }) async {
-//   await firebaseAuth
-//       .createUserWithEmailAndPassword(email: email, password: password)
-//       .then((value) {
-//     previewSuccess(
-//         message: ' ${value.user!.uid} account succesfully created!',
-//         context: context);
-//   });
-// }
-
-// void Signout() async {
-//   await firebaseAuth.signOut();
-// }
-
-// Future signOut({BuildContext? context}) async {
-//   await firebaseAuth.signOut().then((value) {
-//     if (context != null) Navigator.pushNamed(context,  WelcomeScreen.id);
-//     return;
-//   });
-// }
-
-//  static Future deleteDocument({
-//     required String collectionPath,
-//     required String docPath,
-//     required String loadingKey,
-
-//     Function? onSuccess,
-//   }) async {
-
-//     try {
-//       await db.collection(collectionPath).doc(docPath).delete();
-//       if (onSuccess != null) onSuccess();
-//     } on FirebaseException catch (e) {
-//       print(e);
-//       return null;
-//     } on Exception catch (e) {
-//       print(e);
-//       return null;
-//     }
-
-//   }
-
-// }
-
 import 'package:flutter/material.dart';
 import 'package:redux/redux.dart';
 import 'package:todo_new/Appstate/appstate.dart';
@@ -108,7 +53,7 @@ Future signIn(
   }
 }
 
-void addTodo(DateTime? date,
+addTodo(DateTime? date,
     {required BuildContext context,
     required Store<AppState> store,
     required String details,
@@ -134,14 +79,14 @@ void addTodo(DateTime? date,
   }
 }
 
-void showActiveTodo(
+showActiveTodo(
     {required ItemFilter filter,
     required BuildContext context,
     required Store<AppState> store}) {
   store.dispatch(ChangeFilterAction(filter));
 }
 
-void editTodo(
+editTodo(
     {required BuildContext context,
     required Store<AppState> store,
     required String details,
@@ -150,28 +95,16 @@ void editTodo(
   store.dispatch(EditItemAction(index: index, title: title, details: details));
 }
 
-void deleteTodo(
+deleteTodo(
     {required BuildContext context,
     required Store<AppState> store,
     required int index}) {
   store.dispatch(RemoveAction(index: index));
 }
 
-void completeTodo(
+completeTodo(
     {required BuildContext context,
     required Store<AppState> store,
     required int index}) {
   store.dispatch(ToggleItemSelection(index: index));
 }
-// List<Item> fetchUserTodos({  required BuildContext context,
-//   required Store<AppState> store,
-//   required String collectionPath,
-//   required String docPath,
-//    required Map<String, dynamic> data,
-//     Function? onSuccess,
-//   })async{
-//     try{
-//       DocumentSnapshot snapshot = 
-//      await db.
-//     }
-

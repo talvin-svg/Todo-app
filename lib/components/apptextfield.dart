@@ -66,7 +66,7 @@ class AppTextField extends StatelessWidget {
       onTap: onTap,
       obscureText: obscureText ?? false,
       style: TextStyle(
-        color: color ?? Colors.blueGrey.withOpacity(0.5),
+        color: color ?? Theme.of(context).colorScheme.onBackground,
         fontSize: fontSize ?? 18,
         fontWeight: fontWeight ?? FontWeight.w300,
       ),

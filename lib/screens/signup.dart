@@ -86,93 +86,129 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        leading: CustomButton(
-          color: Colors.teal,
-          title: 'back',
-          ontap: () => Navigator.popAndPushNamed(context, WelcomeScreen.id),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        leading: GestureDetector(
+          child: const Icon(Icons.arrow_back_ios_new),
+          onTap: () => Navigator.pushNamed(context, WelcomeScreen.id),
         ),
       ),
-      body: SafeArea(
-        child: ListView(
-          children: [
-            Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const AppText(
-                      text:
-                          'Sign up to start using todo app and get work done!'),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Card(
-                    child: AppRichTextInputField(
-                      context,
-                      hintText: 'Email',
-                      controller: _emailController,
-                      color: Colors.black87,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+              colors: [Colors.indigo, Colors.black],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight),
+        ),
+        child: SafeArea(
+          child: ListView(
+            children: [
+              Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 20,
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Card(
-                    child: AppRichTextInputField(
-                      context,
-                      hintText: 'Password',
-                      controller: _passwordController,
-                      obscureText: showPassword,
-                      suffixFunction: () {
-                        showPassword = !showPassword;
-                        setState(() {});
-                      },
-                      suffixIcon: Icon(
-                        showPassword ? Iconsax.eye_slash4 : Iconsax.eye4,
-                        color: showPassword
-                            ? Colors.black.withOpacity(0.5)
-                            : Colors.pink,
+                    AppText(
+                      text: 'Get Started',
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onBackground,
+                    ),
+                    const SizedBox(
+                      height: 1,
+                    ),
+                    AppText(
+                      text: 'Sign up and get to work!',
+                      fontWeight: FontWeight.w700,
+                      color: Theme.of(context).colorScheme.onBackground,
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: AppText(
+                            text: 'EmailAddress',
+                            color: Theme.of(context).colorScheme.onBackground,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Card(
+                      child: AppRichTextInputField(
+                        context,
+                        hintText: 'Email',
+                        controller: _emailController,
+                        color: Colors.black87,
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  CustomButton(
-                      title: "SignUp",
-                      ontap: () {
-                        makeUser();
-                      },
-                      color: Colors.blue),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  const AppText(
-                    text: "Already have an account?",
-                    color: Colors.teal,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  GestureDetector(
-                    child: const AppText(
-                      text: 'Login',
-                      fontSize: 20,
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: AppText(
+                            text: 'Password',
+                            color: Theme.of(context).colorScheme.onBackground,
+                          ),
+                        ),
+                      ],
                     ),
-                    onTap: () {
-                      try {
-                        pushToSigner();
-                      } catch (e) {
-                        print(e.toString());
-                      }
-                    },
-                  ),
-                ],
+                    Card(
+                      child: AppRichTextInputField(
+                        context,
+                        hintText: 'Password',
+                        controller: _passwordController,
+                        obscureText: showPassword,
+                        suffixFunction: () {
+                          showPassword = !showPassword;
+                          setState(() {});
+                        },
+                        suffixIcon: Icon(
+                            showPassword ? Iconsax.eye4 : Iconsax.eye_slash4,
+                            color: Theme.of(context).colorScheme.onBackground),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    CustomButton(
+                        title: "Sign Up",
+                        ontap: () {
+                          makeUser();
+                        },
+                        color: Colors.blue),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    const AppText(
+                      text: "Already have an account?",
+                      color: Colors.teal,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    CustomButton(
+                      title: 'Sign In',
+                      color: Colors.teal,
+                      ontap: () => Navigator.pushNamed(context, SignInPage.id),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
