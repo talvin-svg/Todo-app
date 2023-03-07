@@ -34,7 +34,7 @@ class Item {
   Map<String, dynamic> toMap() {
     return {
       'title': title,
-      'done': false,
+      'done': done,
       'createdAt': '',
       'id': id,
       'details': details,

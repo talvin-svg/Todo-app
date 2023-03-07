@@ -44,7 +44,6 @@ Future signUpUser({
         },
         store: store);
   });
-  store.dispatch(StopLoadingAction(loadingKey: loadingKey));
 }
 
 Future signOut({BuildContext? context}) async {
@@ -86,7 +85,6 @@ Future signIn(
   } catch (e) {
     print(e.toString());
   }
-  store.dispatch(StopLoadingAction(loadingKey: loadingKey));
 }
 
 Future addTodo(DateTime? date,
@@ -154,25 +152,45 @@ Future editTodo(
       store: store,
       collectionPath: 'users/$FIR_UID/todos',
       loadingKey: loadingKey,
-      docPath: item.id ?? '',
+      docPath: editItem.id ?? '',
       data: dataItem);
-  if (dataItem['dueDate'] == item.dueDate) {
-    print('true , ${dataItem['title']} ${item.title}');
-  }
-  (store
-      .dispatch(EditItemAction(index: index, title: title, details: details)));
+
+  store.dispatch(EditItemAction(index: index, title: title, details: details));
 }
 
 deleteTodo(
     {required BuildContext context,
     required Store<AppState> store,
-    required int index}) {
+    required String loadingKey,
+    required Item item,
+    required int index}) async {
+  store.dispatch(StartLoadingAction(loadingKey: loadingKey));
+
+  await Firestore.deleteDocument(
+      collectionPath: 'users/$FIR_UID/todos',
+      docPath: item.id ?? '',
+      loadingKey: loadingKey,
+      store: store);
   store.dispatch(RemoveAction(index: index));
 }
 
-completeTodo(
+Future completeTodo(
     {required BuildContext context,
     required Store<AppState> store,
-    required int index}) {
+    required String loadingKey,
+    required Item item,
+    required int index}) async {
+  store.dispatch(StartLoadingAction(loadingKey: loadingKey));
+
+  Item editItem = item.copyWith(done: true);
+  print(editItem.done);
+  final dataItem = editItem.toMap();
+
+  await Firestore.updateDocument(
+      store: store,
+      collectionPath: 'users/$FIR_UID/todos',
+      loadingKey: loadingKey,
+      docPath: editItem.id ?? '',
+      data: dataItem);
   store.dispatch(ToggleItemSelection(index: index));
 }

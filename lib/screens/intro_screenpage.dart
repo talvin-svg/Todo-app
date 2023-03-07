@@ -214,6 +214,8 @@ class _IntroScreenState extends State<IntroScreen> {
                               ),
                               onDismissed: (direction) {
                                 deleteTodo(
+                                    item: item,
+                                    loadingKey: deleteToodLoadingKey,
                                     context: context,
                                     store: vm.store,
                                     index: index);
@@ -240,7 +242,7 @@ class _IntroScreenState extends State<IntroScreen> {
                                 color: getBackColor(item.color!),
                                 title: item.title!,
                                 ontap: () {
-                                  editor(context, vm.store, index, 'completed');
+                                  editor(context, vm.store, item);
                                 },
                                 details: item.details!,
                                 dueDate: item.dueDate?.toIso8601String() ??
@@ -579,10 +581,14 @@ class _IntroScreenState extends State<IntroScreen> {
     }
   }
 
-  Future<dynamic> editor(BuildContext context, Store<AppState> store, int index,
-      String completed) {
-    Item item = store.state.itemListState.itemList[index];
+  Future<dynamic> editor(
+    BuildContext context,
+    Store<AppState> store,
+    Item item,
+  ) {
+    var actualIndex = store.state.itemListState.itemList.indexOf(item);
 
+    print(item.title);
     return showDialog(
         context: context,
         builder: ((context) {
@@ -645,7 +651,7 @@ class _IntroScreenState extends State<IntroScreen> {
                                       store: store,
                                       details: dialogDetailsController.text,
                                       title: dialogController.text,
-                                      index: index);
+                                      index: actualIndex);
                                   setState(() {
                                     dialogController.text = '';
                                     dialogDetailsController.text = '';

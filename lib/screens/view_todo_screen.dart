@@ -8,6 +8,7 @@ import 'package:todo_new/Appstate/appstate.dart';
 import 'package:todo_new/async_actions.dart';
 import 'package:todo_new/components/app_text.dart';
 import 'package:todo_new/components/constants.dart';
+import 'package:todo_new/list/constants.dart';
 
 import 'package:todo_new/list/model.dart';
 import 'package:todo_new/list/selectors.dart';
@@ -176,7 +177,11 @@ class _ViewTodoScreenState extends State<ViewTodoScreen> {
                 controller.loading();
                 Future.delayed(const Duration(seconds: 2)).then((_) =>
                     completeTodo(
-                        context: context, store: vm.store, index: itemIndex));
+                        loadingKey: completeToodLoadingKey,
+                        context: context,
+                        item: widget.item,
+                        store: vm.store,
+                        index: itemIndex));
 
                 controller.success();
               }

@@ -58,15 +58,35 @@ class Firestore {
     store.dispatch(StartLoadingAction(loadingKey: loadingKey));
     try {
       DocumentReference doc = db.collection(collectionPath).doc(docPath);
-      if (!(await doc.get()).exists) {
-        print('error');
-        // await doc.update(cleanData(data));
+      if ((await doc.get()).exists) {
+        await doc.update(cleanData(data));
         if (onSuccess != null) onSuccess;
       }
     } on FirebaseException catch (e) {
       print(e);
     } on Exception catch (e) {
       print(e);
+    }
+    store.dispatch(StopLoadingAction(loadingKey: loadingKey));
+  }
+
+  static Future deleteDocument({
+    required String collectionPath,
+    required String docPath,
+    required String loadingKey,
+    required Store<AppState> store,
+    Function? onSuccess,
+  }) async {
+    store.dispatch(StartLoadingAction(loadingKey: loadingKey));
+    try {
+      await db.collection(collectionPath).doc(docPath).delete();
+      if (onSuccess != null) onSuccess();
+    } on FirebaseException catch (e) {
+      print(e);
+      return null;
+    } on Exception catch (e) {
+      print(e);
+      return null;
     }
     store.dispatch(StopLoadingAction(loadingKey: loadingKey));
   }
