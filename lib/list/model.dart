@@ -5,7 +5,7 @@ class Item {
   String? id;
   bool done = false;
   DateTime createdAt;
-  Color? color;
+  String? color;
   String? details;
   DateTime? dueDate;
   Categories? category;
@@ -15,7 +15,7 @@ class Item {
       required this.details,
       required this.createdAt,
       required this.category,
-      this.id,
+      required this.id,
       bool? done,
       this.color,
       this.dueDate});
@@ -39,6 +39,7 @@ class Item {
       'id': id,
       'details': details,
       'dueDate': dueDate,
+      'color': color
     };
   }
 
@@ -46,7 +47,7 @@ class Item {
       {String? title,
       String? id,
       bool? done,
-      Color? color,
+      String? color,
       String? details,
       Categories? category,
       DateTime? createdAt,

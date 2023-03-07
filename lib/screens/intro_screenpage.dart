@@ -13,12 +13,12 @@ import 'package:todo_new/components/dismissed_container.dart';
 import 'package:todo_new/components/scaffold_error_message.dart';
 import 'package:todo_new/components/todo_manager.dart';
 import 'package:todo_new/helpers.dart';
+import 'package:todo_new/list/constants.dart';
 import 'package:todo_new/list/model.dart';
 import 'package:todo_new/list/selectors.dart';
 import 'package:todo_new/list/state.dart';
 import 'package:todo_new/screens/todo_form.dart';
 import 'package:todo_new/screens/view_todo_screen.dart';
-import 'package:todo_new/screens/welcome_screen.dart';
 
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
@@ -67,8 +67,7 @@ class _IntroScreenState extends State<IntroScreen> {
           backgroundColor: Colors.transparent,
           leading: GestureDetector(
               onTap: () {
-                signOut();
-                Navigator.pushNamed(context, WelcomeScreen.id);
+                signOut(context: context);
               },
               child: const Icon(Icons.arrow_back_ios)),
           actions: [
@@ -238,7 +237,7 @@ class _IntroScreenState extends State<IntroScreen> {
                                             item: item,
                                           )));
                                 },
-                                color: item.color!,
+                                color: getBackColor(item.color!),
                                 title: item.title!,
                                 ontap: () {
                                   editor(context, vm.store, index, 'completed');
@@ -285,7 +284,7 @@ class _IntroScreenState extends State<IntroScreen> {
                                             width: 5,
                                           ),
                                           AppText(
-                                            text: categorySeletor(category),
+                                            text: categorySelector(category),
                                             color: Theme.of(context)
                                                 .colorScheme
                                                 .onBackground,
@@ -316,7 +315,7 @@ class _IntroScreenState extends State<IntroScreen> {
                                           ),
                                           AppText(
                                               text: (onActiveSelected)
-                                                  ? 'Active Tasks'
+                                                  ? ('Active Tasks')
                                                   : 'Completed Tasks')
                                         ],
                                       )
@@ -582,6 +581,8 @@ class _IntroScreenState extends State<IntroScreen> {
 
   Future<dynamic> editor(BuildContext context, Store<AppState> store, int index,
       String completed) {
+    Item item = store.state.itemListState.itemList[index];
+
     return showDialog(
         context: context,
         builder: ((context) {
@@ -638,6 +639,8 @@ class _IntroScreenState extends State<IntroScreen> {
                                   return;
                                 } else {
                                   editTodo(
+                                      item: item,
+                                      loadingKey: updateTodoLoadingKey,
                                       context: context,
                                       store: store,
                                       details: dialogDetailsController.text,

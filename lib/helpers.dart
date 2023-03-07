@@ -31,3 +31,8 @@ List<Categories> category = [
   Categories.personal,
   Categories.work
 ];
+
+bool isEmptyOrNull(String? item) {
+  // Checks for whitespace & null
+  return ((item?.trim() ?? '') == '');
+}

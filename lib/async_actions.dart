@@ -2,77 +2,128 @@ import 'package:flutter/material.dart';
 import 'package:redux/redux.dart';
 import 'package:todo_new/Appstate/appstate.dart';
 import 'package:todo_new/Appstate/reducer.dart';
-import 'package:todo_new/firestore/firestore.dart';
+import 'package:todo_new/db.dart';
+import 'package:todo_new/dialogs.dart';
+import 'package:todo_new/firestore.dart';
 import 'package:todo_new/list/actions/actions.dart';
+import 'package:todo_new/list/constants.dart';
+import 'package:todo_new/list/selectors.dart';
 import 'package:todo_new/list/state.dart';
-
+import 'package:todo_new/loading/actions.dart';
 import 'package:todo_new/screens/intro_screenpage.dart';
-
 import 'components/scaffold_error_message.dart';
 import 'components/text_field_validator.dart';
 import 'package:todo_new/list/model.dart';
+import 'package:firebase_auth/firebase_auth.dart' as f_auth;
 
 //TODO fix this page.
 
-Future<void> signOut() async {
-  try {
-    await Firestore.firebaseAuth.signOut();
-  } catch (e) {
-    print(e);
+f_auth.FirebaseAuth firebaseAuth = f_auth.FirebaseAuth.instance;
+
+Future signUpUser({
+  required String email,
+  required String password,
+  required BuildContext context,
+  required Store<AppState> store,
+  required String loadingKey,
+}) async {
+  store.dispatch(StartLoadingAction(loadingKey: loadingKey));
+  await firebaseAuth
+      .createUserWithEmailAndPassword(email: email, password: password)
+      .then((result) async {
+    if (result.user == null) return;
+
+    await Firestore.createDocument(
+        loadingKey: createUserLoadingKey,
+        collectionPath: 'users',
+        code: result.user!.uid,
+        data: {'email': result.user!.email},
+        onSuccess: (code) {
+          previewSuccess(message: 'Sign up comeplete!', context: context);
+          Navigator.pushNamed(context, IntroScreen.id);
+        },
+        store: store);
+  });
+  store.dispatch(StopLoadingAction(loadingKey: loadingKey));
+}
+
+Future signOut({BuildContext? context}) async {
+  if (context != null) {
+    showYesNoActionSheet(
+        context: context,
+        message: 'Are you sure you want to sign out?',
+        onYesClicked: () async {
+          await firebaseAuth
+              .signOut()
+              .then((_) => Navigator.of(context, rootNavigator: true).pop())
+              .then((_) => Navigator.pop(context));
+        });
   }
+  await firebaseAuth.signOut();
+  return;
 }
 
 Future signIn(
     {required String email,
+    required Store<AppState> store,
     required String password,
-    required BuildContext context}) async {
-  bool onSuccess = false;
+    required String loadingKey,
+    required BuildContext context,
+    Function? onSuccess}) async {
+  store.dispatch(StartLoadingAction(loadingKey: loadingKey));
   if (!isLoginFieldsValid(email, password)) {
     previewError(context: context, message: 'Fields not filled in correctly!');
     return;
   }
   await signOut();
-  try {
-    var result = await Firestore.firebaseAuth
-        .signInWithEmailAndPassword(email: email, password: password);
-    onSuccess = true;
-    previewSuccess(
-        message: 'Welcome Back!, Lets get to work', context: context);
 
-    Future.delayed(const Duration(seconds: 4), (() {
-      (onSuccess)
-          ? Navigator.pushNamed(context, IntroScreen.id)
-          : previewError(
-              message: 'Account could not be created at this time',
-              context: context);
-    }));
-    return;
+  try {
+    await firebaseAuth
+        .signInWithEmailAndPassword(email: email, password: password)
+        .then((value) => (onSuccess != null) ? onSuccess() : null)
+        .then((value) =>
+            store.dispatch(StopLoadingAction(loadingKey: loadingKey)));
   } catch (e) {
     print(e.toString());
-    return;
   }
+  store.dispatch(StopLoadingAction(loadingKey: loadingKey));
 }
 
-addTodo(DateTime? date,
+Future addTodo(DateTime? date,
     {required BuildContext context,
     required Store<AppState> store,
     required String details,
     required String title,
+    required String loadingKey,
     required Color color,
-    required Categories category}) {
+    required Categories category}) async {
+  String todoCode = Firestore.generateDocCode(startsWith: 'Todo');
   if (details.isNotEmpty && title.isNotEmpty) {
+    store.dispatch(StartLoadingAction(loadingKey: loadingKey));
+
+    Item item = Item(
+      id: todoCode,
+      category: category,
+      createdAt: DateTime.now(),
+      title: title,
+      details: details,
+      dueDate: date,
+      color: colorSelector(color),
+    );
     store.dispatch(
       AddItemAction(
-        item: Item(
-          category: category,
-          createdAt: DateTime.now(),
-          title: title,
-          details: details,
-          dueDate: date,
-          color: color,
-        ),
+        item: item,
       ),
     );
+
+    await Firestore.createDocument(
+        collectionPath: 'users/$FIR_UID/todos',
+        code: todoCode,
+        loadingKey: loadingKey,
+        data: item.toMap(),
+        onSuccess: () {},
+        store: store);
+    store.dispatch(StopLoadingAction(loadingKey: loadingKey));
   } else {
     previewError(
         message: 'Please make sure every field is not empty', context: context);
@@ -86,13 +137,30 @@ showActiveTodo(
   store.dispatch(ChangeFilterAction(filter));
 }
 
-editTodo(
+Future editTodo(
     {required BuildContext context,
     required Store<AppState> store,
     required String details,
+    required String loadingKey,
+    required Item item,
     required String title,
-    required int index}) {
-  store.dispatch(EditItemAction(index: index, title: title, details: details));
+    required int index}) async {
+  store.dispatch(StartLoadingAction(loadingKey: loadingKey));
+
+  Item editItem = item.copyWith(title: title, details: details);
+  final dataItem = editItem.toMap();
+
+  await Firestore.updateDocument(
+      store: store,
+      collectionPath: 'users/$FIR_UID/todos',
+      loadingKey: loadingKey,
+      docPath: item.id ?? '',
+      data: dataItem);
+  if (dataItem['dueDate'] == item.dueDate) {
+    print('true , ${dataItem['title']} ${item.title}');
+  }
+  (store
+      .dispatch(EditItemAction(index: index, title: title, details: details)));
 }
 
 deleteTodo(

@@ -18,37 +18,40 @@ List<Item> selectItemsByCategories(Categories category, Store<AppState> store) {
   return items.where((item) => item.category == category).toList();
 }
 
-String categorySeletor(Categories category) {
-  String? result;
-  switch (category) {
-    case Categories.work:
-      result = 'Work';
-      break;
-
-    case Categories.personal:
-      result = 'Personal';
-      break;
-    case Categories.urgent:
-      result = 'Urgent';
-      break;
-  }
-  return result;
+String categorySelector(Categories category) {
+  final categoryMap = {
+    Categories.work: 'Work',
+    Categories.personal: 'Personal',
+    Categories.urgent: 'Urgent',
+  };
+  return categoryMap[category] ?? 'Unknown';
 }
 
 Icon iconSelector(Categories category) {
-  Icon? result;
+  final iconMap = {
+    Categories.work: const Icon(Icons.work),
+    Categories.personal: const Icon(Icons.book),
+    Categories.urgent: const Icon(Icons.priority_high),
+  };
+  return iconMap[category] ?? const Icon(Icons.help_outline);
+}
 
-  switch (category) {
-    case Categories.work:
-      result = const Icon(Icons.work);
-      break;
+String colorSelector(Color color) {
+  final colorMap = {
+    Colors.indigo.shade100: 'indigo',
+    Colors.orange.shade300: 'orange',
+    Colors.purple: 'purple',
+    Colors.pink: 'pink',
+  };
+  return colorMap[color] ?? 'unknown';
+}
 
-    case Categories.personal:
-      result = const Icon(Icons.book);
-      break;
-    case Categories.urgent:
-      result = const Icon(Icons.priority_high);
-      break;
-  }
-  return result;
+Color getBackColor(String colorString) {
+  final colorMap = {
+    'indigo': Colors.indigo.shade100,
+    'orange': Colors.orange.shade300,
+    'purple': Colors.purple,
+    'pink': Colors.pink
+  };
+  return colorMap[colorString] ?? Colors.indigo.shade100;
 }

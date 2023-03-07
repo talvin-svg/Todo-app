@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '/components/custom_button.dart';
 import '/screens/signup.dart';
 import '../components/app_text.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+FirebaseAuth fauth = FirebaseAuth.instance;
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -27,6 +30,7 @@ class WelcomeScreen extends StatelessWidget {
                 CustomButton(
                     title: 'Get Started',
                     ontap: () {
+                      print('${fauth.currentUser == null}');
                       Navigator.pushNamed(context, SignUpPage.id);
                     },
                     color: Colors.blue)

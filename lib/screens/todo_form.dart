@@ -9,6 +9,7 @@ import 'package:todo_new/async_actions.dart';
 import 'package:todo_new/components/app_text.dart';
 import 'package:todo_new/components/app_text_input_field.dart';
 import 'package:todo_new/components/constants.dart';
+import 'package:todo_new/list/constants.dart';
 import 'package:todo_new/list/model.dart';
 import 'package:todo_new/list/selectors.dart';
 
@@ -96,6 +97,7 @@ class _TodoFormState extends State<TodoForm> {
                                   ? DateTime.parse(dateController.text)
                                   : DateTime.now(),
                               category: categories[selectedIndex],
+                              loadingKey: creaeteTodoLoadingKey,
                               store: vm.store,
                               context: context,
                               details: detailsController.text,
@@ -240,7 +242,7 @@ class _TodoFormState extends State<TodoForm> {
               child: Column(
                 children: [
                   AppText(
-                    text: categorySeletor(categories[index]),
+                    text: categorySelector(categories[index]),
                     color: Theme.of(context).colorScheme.onBackground,
                     maxLines: 2,
                     fontSize: 17,

@@ -49,7 +49,7 @@ class _ViewTodoScreenState extends State<ViewTodoScreen> {
       ),
       body: Container(
         padding: const EdgeInsets.only(top: 40),
-        decoration: BoxDecoration(color: widget.item.color),
+        decoration: BoxDecoration(color: getBackColor(widget.item.color!)),
         child: StoreConnector<AppState, _ViewModel>(
           converter: (store) => _ViewModel(store: store, context: context),
           builder: (context, vm) {
@@ -78,7 +78,7 @@ class _ViewTodoScreenState extends State<ViewTodoScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           AppText(
-                            text: categorySeletor(widget.item.category!),
+                            text: categorySelector(widget.item.category!),
                             fontSize: 14,
                             color: Theme.of(context).colorScheme.onBackground,
                           ),
