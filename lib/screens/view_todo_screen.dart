@@ -183,7 +183,7 @@ class _ViewTodoScreenState extends State<ViewTodoScreen> {
                         item: widget.item,
                         store: vm.store,
                         index: itemIndex));
-
+                setState(() {});
                 controller.success();
               }
             },
