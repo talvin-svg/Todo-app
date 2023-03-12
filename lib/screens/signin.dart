@@ -143,23 +143,7 @@ class _SignInPageState extends State<SignInPage> {
                   const SizedBox(
                     height: 30,
                   ),
-                  RoundedButton(
-                      loadingKey: signUserLoadingKey,
-                      text: "Sign In",
-                      onTap: () {
-                        signIn(
-                            loadingKey: signUserLoadingKey,
-                            store: vm.store,
-                            email: _emailController.text,
-                            password: _passwordController.text,
-                            context: context,
-                            onSuccess: () {
-                              previewSuccess(
-                                  message: 'Welcome Back!', context: context);
-                              Navigator.pushNamed(context, IntroScreen.id);
-                            });
-                      },
-                      backgroundColor: Colors.blue),
+                  signInButton(vm, context),
                   const SizedBox(
                     height: 30,
                   ),
@@ -182,6 +166,27 @@ class _SignInPageState extends State<SignInPage> {
         ),
       ),
     );
+  }
+
+  Widget signInButton(_ViewModel vm, BuildContext context) {
+    return RoundedButton(
+        width: 100,
+        isPill: true,
+        loadingKey: signUserLoadingKey,
+        text: "Sign In",
+        onTap: () {
+          signIn(
+              loadingKey: signUserLoadingKey,
+              store: vm.store,
+              email: _emailController.text,
+              password: _passwordController.text,
+              context: context,
+              onSuccess: () {
+                previewSuccess(message: 'Welcome Back!', context: context);
+                Navigator.pushNamed(context, IntroScreen.id);
+              });
+        },
+        backgroundColor: Colors.blue);
   }
 
   @override

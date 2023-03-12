@@ -90,4 +90,58 @@ class Firestore {
     }
     store.dispatch(StopLoadingAction(loadingKey: loadingKey));
   }
+
+  static Future<List<Map<String, dynamic>>> getDocumentsInAList({
+    required String collectionPath,
+    required String loadingKey,
+    Function? onSuccess,
+    required String field,
+    required List<String> listIn,
+    required Store<AppState> store,
+  }) async {
+    store.dispatch(StartLoadingAction(loadingKey: loadingKey));
+    try {
+      QuerySnapshot snapshot = await db
+          .collection(collectionPath)
+          .where(field, whereIn: listIn)
+          .get();
+      List<Map<String, dynamic>> result = [];
+      result = snapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+      store.dispatch(StopLoadingAction(loadingKey: loadingKey));
+      return result;
+    } on FirebaseException catch (e) {
+      print(e);
+    } on Exception catch (e) {
+      print(e);
+    }
+    store.dispatch(StopLoadingAction(loadingKey: loadingKey));
+    return [];
+  }
+
+  static Future<List<Map<String, dynamic>>> getDocuments({
+    required String collectionPath,
+    required String loadingKey,
+    Function? onSuccess,
+    required Store<AppState> store,
+  }) async {
+    store.dispatch(StartLoadingAction(loadingKey: loadingKey));
+    try {
+      QuerySnapshot snapshot = await db.collection(collectionPath).get();
+      List<Map<String, dynamic>> result = [];
+      result =
+          snapshot.docs.map((e) => e.data() as Map<String, dynamic>).toList();
+      store.dispatch(StopLoadingAction(loadingKey: loadingKey));
+      return result;
+    } on FirebaseException catch (e) {
+      print(collectionPath);
+      print(e);
+    } on Exception catch (e) {
+      print(collectionPath);
+      print(e);
+    }
+    store.dispatch(StopLoadingAction(loadingKey: loadingKey));
+    return [];
+  }
 }

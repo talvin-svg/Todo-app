@@ -3,27 +3,25 @@ import 'dart:ui';
 class Item {
   String? title;
   String? id;
-  bool done = false;
-  DateTime createdAt;
+  bool? done;
+
   String? color;
   String? details;
   DateTime? dueDate;
-  Categories? category;
+  String? category;
 
   Item(
       {required this.title,
       required this.details,
-      required this.createdAt,
       required this.category,
       required this.id,
-      bool? done,
+      this.done = false,
       this.color,
       this.dueDate});
 
   factory Item.fromMap(Map<String, dynamic>? data) {
     return Item(
-        dueDate: data?['dueDate'],
-        createdAt: data?['createdAt'],
+        dueDate: data?['dueDate'].toDate(),
         title: data?['title'],
         id: data?['id'],
         color: data?['color'],
@@ -35,11 +33,11 @@ class Item {
     return {
       'title': title,
       'done': done,
-      'createdAt': '',
       'id': id,
       'details': details,
       'dueDate': dueDate,
-      'color': color
+      'color': color,
+      'category': category
     };
   }
 
@@ -49,12 +47,10 @@ class Item {
       bool? done,
       String? color,
       String? details,
-      Categories? category,
-      DateTime? createdAt,
+      String? category,
       DateTime? dueDate}) {
     return Item(
         category: category ?? this.category,
-        createdAt: createdAt ?? this.createdAt,
         dueDate: dueDate ?? this.dueDate,
         title: title ?? this.title,
         id: id ?? this.id,

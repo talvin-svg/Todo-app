@@ -9,6 +9,7 @@ Reducer<ItemListState> itemsReducer = combineReducers<ItemListState>([
   TypedReducer<ItemListState, RemoveAction>(removeItemReducer),
   TypedReducer<ItemListState, ToggleItemSelection>(toggleItemSelectionReducer),
   TypedReducer<ItemListState, EditItemAction>(editItemReducer),
+  TypedReducer<ItemListState, AddAllItemAction>(addAllItemsReducer),
 ]);
 
 ItemListState addItemReducer(
@@ -27,7 +28,7 @@ ItemListState removeItemReducer(
 ItemListState toggleItemSelectionReducer(
     ItemListState previousItems, ToggleItemSelection action) {
   Item modifiedItem = previousItems.itemList.elementAt(action.index);
-  modifiedItem.done = !modifiedItem.done;
+  modifiedItem.done = !modifiedItem.done!;
   previousItems.itemList
       .replaceRange(action.index, action.index + 1, [modifiedItem]);
   return previousItems;
@@ -41,4 +42,11 @@ ItemListState editItemReducer(
   previousItems.itemList
       .replaceRange(action.index, action.index + 1, [modifiedItem]);
   return previousItems;
+}
+
+ItemListState addAllItemsReducer(
+    ItemListState previousItems, AddAllItemAction action) {
+  var newItems =
+      previousItems.copyWith([...previousItems.itemList, ...action.items]);
+  return newItems;
 }

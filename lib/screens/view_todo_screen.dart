@@ -2,10 +2,10 @@ import 'package:action_slider/action_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl/intl.dart';
-
+import 'package:todo_new/async_actions.dart';
 import 'package:redux/redux.dart';
 import 'package:todo_new/Appstate/appstate.dart';
-import 'package:todo_new/async_actions.dart';
+
 import 'package:todo_new/components/app_text.dart';
 import 'package:todo_new/components/constants.dart';
 import 'package:todo_new/list/constants.dart';
@@ -79,12 +79,13 @@ class _ViewTodoScreenState extends State<ViewTodoScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           AppText(
-                            text: categorySelector(widget.item.category!),
+                            text: widget.item.category!,
                             fontSize: 14,
                             color: Theme.of(context).colorScheme.onBackground,
                           ),
                           // spaceHorizontal,
-                          iconSelector(widget.item.category!)
+                          iconCategorySelector(
+                              categorySelector(widget.item.category!))
                         ],
                       ),
                     ),
@@ -97,7 +98,7 @@ class _ViewTodoScreenState extends State<ViewTodoScreen> {
                         overflow: TextOverflow.ellipsis,
                         text: widget.item.title,
                         color: Theme.of(context).colorScheme.onBackground,
-                        fontSize: 60,
+                        fontSize: 50,
                       ),
                     ),
                     spaceVertical,
@@ -148,7 +149,7 @@ class _ViewTodoScreenState extends State<ViewTodoScreen> {
                     AppText(
                       fontWeight: FontWeight.w600,
                       text: DateFormat('MMMM dd yyyy')
-                          .format(widget.item.createdAt)
+                          .format(widget.item.dueDate!)
                           .toString(),
                       color: Theme.of(context).colorScheme.onBackground,
                     ),

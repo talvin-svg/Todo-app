@@ -26,6 +26,7 @@ Future signUpUser({
   required BuildContext context,
   required Store<AppState> store,
   required String loadingKey,
+  required Function onError,
 }) async {
   store.dispatch(StartLoadingAction(loadingKey: loadingKey));
   await firebaseAuth
@@ -38,11 +39,15 @@ Future signUpUser({
         collectionPath: 'users',
         code: result.user!.uid,
         data: {'email': result.user!.email},
-        onSuccess: (code) {
+        onSuccess: () {
           previewSuccess(message: 'Sign up comeplete!', context: context);
           Navigator.pushNamed(context, IntroScreen.id);
         },
         store: store);
+    store.dispatch(StopLoadingAction(loadingKey: loadingKey));
+  }).catchError((e) {
+    onError();
+    previewError(message: e.toString(), context: context);
   });
 }
 
@@ -83,7 +88,8 @@ Future signIn(
         .then((value) =>
             store.dispatch(StopLoadingAction(loadingKey: loadingKey)));
   } catch (e) {
-    print(e.toString());
+    print(e);
+    store.dispatch(StopLoadingAction(loadingKey: loadingKey));
   }
 }
 
@@ -94,7 +100,7 @@ Future addTodo(DateTime? date,
     required String title,
     required String loadingKey,
     required Color color,
-    required Categories category}) async {
+    required String category}) async {
   String todoCode = Firestore.generateDocCode(startsWith: 'Todo');
   if (details.isNotEmpty && title.isNotEmpty) {
     store.dispatch(StartLoadingAction(loadingKey: loadingKey));
@@ -102,7 +108,6 @@ Future addTodo(DateTime? date,
     Item item = Item(
       id: todoCode,
       category: category,
-      createdAt: DateTime.now(),
       title: title,
       details: details,
       dueDate: date,
@@ -193,4 +198,29 @@ Future completeTodo(
       docPath: editItem.id ?? '',
       data: dataItem);
   store.dispatch(ToggleItemSelection(index: index));
+  print('hit');
+  print(editItem.done);
+}
+
+void stopLoadingAction(
+    {required String loadingKey, required Store<AppState> store}) {
+  store.dispatch(StopLoadingAction(loadingKey: loadingKey));
+}
+
+Future fetchUserTodos({
+  required Store<AppState> store,
+}) async {
+  store.dispatch(StartLoadingAction(loadingKey: fetchTodoLoadingKey));
+
+  List<Item> todoItems = [];
+  List todos = await Firestore.getDocuments(
+      collectionPath: ('users/$FIR_UID/todos'),
+      loadingKey: fetchTodoLoadingKey,
+      store: store);
+
+  for (var data in todos) {
+    Item item = Item.fromMap(data);
+    todoItems.add(item);
+  }
+  store.dispatch(AddAllItemAction(items: todoItems));
 }

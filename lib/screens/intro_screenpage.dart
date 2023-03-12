@@ -117,6 +117,9 @@ class _IntroScreenState extends State<IntroScreen> {
           ),
         ),
         child: StoreConnector<AppState, _ViewModel>(
+          onInit: (store) {
+            fetchUserTodos(store: store);
+          },
           converter: (store) => _ViewModel(context: context, store: store),
           builder: (context, vm) {
             List<Item> items = vm.filteredByDay(weeks[selectedWeekIndex]);
@@ -207,18 +210,22 @@ class _IntroScreenState extends State<IntroScreen> {
                           return Padding(
                             padding: const EdgeInsets.all(1),
                             child: Dismissible(
+                              direction: DismissDirection.endToStart,
+                              resizeDuration: const Duration(seconds: 2),
                               background: const CustomDismissedContainer(
                                 color: Colors.red,
                                 icon: Icons.delete,
                                 isDelete: true,
                               ),
                               onDismissed: (direction) {
+                                setState(() {});
                                 deleteTodo(
                                     item: item,
                                     loadingKey: deleteToodLoadingKey,
                                     context: context,
                                     store: vm.store,
                                     index: index);
+
                                 previewSuccess(
                                     message: 'Todo was successfully deleted',
                                     context: context);
@@ -247,7 +254,8 @@ class _IntroScreenState extends State<IntroScreen> {
                                 details: item.details!,
                                 dueDate: item.dueDate?.toIso8601String() ??
                                     'no time alloted',
-                                categoryIcon: iconSelector(item.category!),
+                                categoryIcon:
+                                    iconStringSelector(item.category!),
                                 iconMore: Icon(
                                   Icons.more_horiz_rounded,
                                   color: Theme.of(context)
@@ -281,12 +289,13 @@ class _IntroScreenState extends State<IntroScreen> {
                                     children: [
                                       Row(
                                         children: [
-                                          iconSelector(category),
+                                          iconCategorySelector(category),
                                           const SizedBox(
                                             width: 5,
                                           ),
                                           AppText(
-                                            text: categorySelector(category),
+                                            text: categoryStringSelector(
+                                                category),
                                             color: Theme.of(context)
                                                 .colorScheme
                                                 .onBackground,

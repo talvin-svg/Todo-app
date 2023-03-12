@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:redux/redux.dart';
 import 'package:todo_new/Appstate/appstate.dart';
@@ -15,10 +16,12 @@ List<Item> selectItemsByDay(String day, Store<AppState> store) {
 List<Item> selectItemsByCategories(Categories category, Store<AppState> store) {
   List<Item> items = store.state.filteredItems;
 
-  return items.where((item) => item.category == category).toList();
+  return items
+      .where((item) => categorySelector(item.category!) == category)
+      .toList();
 }
 
-String categorySelector(Categories category) {
+String categoryStringSelector(Categories category) {
   final categoryMap = {
     Categories.work: 'Work',
     Categories.personal: 'Personal',
@@ -27,13 +30,31 @@ String categorySelector(Categories category) {
   return categoryMap[category] ?? 'Unknown';
 }
 
-Icon iconSelector(Categories category) {
+Categories categorySelector(String category) {
+  final categoryMap = {
+    'Work': Categories.work,
+    'Personal': Categories.personal,
+    'Urgent': Categories.urgent,
+  };
+  return categoryMap[category] ?? Categories.work;
+}
+
+Icon iconStringSelector(String category) {
   final iconMap = {
+    "Work": const Icon(Icons.work),
+    "Personal": const Icon(Icons.book),
+    "Urgent": const Icon(Icons.priority_high),
+  };
+  return iconMap[category] ?? const Icon(Icons.help_outline);
+}
+
+Icon iconCategorySelector(Categories category) {
+  final categoryMap = {
     Categories.work: const Icon(Icons.work),
     Categories.personal: const Icon(Icons.book),
     Categories.urgent: const Icon(Icons.priority_high),
   };
-  return iconMap[category] ?? const Icon(Icons.help_outline);
+  return categoryMap[category] ?? const Icon(Icons.help_outline);
 }
 
 String colorSelector(Color color) {

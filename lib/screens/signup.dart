@@ -181,6 +181,9 @@ class _SignUpPageState extends State<SignUpPage> {
     }
 
     return signUpUser(
+      onError: () {
+        stopLoadingAction(loadingKey: createUserLoadingKey, store: store);
+      },
       loadingKey: createUserLoadingKey,
       email: _emailController.text,
       password: _passwordController.text,

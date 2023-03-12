@@ -96,7 +96,8 @@ class _TodoFormState extends State<TodoForm> {
                               (dateController.text.isNotEmpty)
                                   ? DateTime.parse(dateController.text)
                                   : DateTime.now(),
-                              category: categories[selectedIndex],
+                              category: categoryStringSelector(
+                                  categories[selectedIndex]),
                               loadingKey: creaeteTodoLoadingKey,
                               store: vm.store,
                               context: context,
@@ -242,7 +243,7 @@ class _TodoFormState extends State<TodoForm> {
               child: Column(
                 children: [
                   AppText(
-                    text: categorySelector(categories[index]),
+                    text: categoryStringSelector(categories[index]),
                     color: Theme.of(context).colorScheme.onBackground,
                     maxLines: 2,
                     fontSize: 17,
@@ -250,7 +251,7 @@ class _TodoFormState extends State<TodoForm> {
                   const SizedBox(
                     height: 10,
                   ),
-                  iconSelector(categories[index])
+                  iconCategorySelector(categories[index])
                 ],
               ),
             ),
