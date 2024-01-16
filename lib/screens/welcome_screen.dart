@@ -30,7 +30,6 @@ class WelcomeScreen extends StatelessWidget {
                 CustomButton(
                     title: 'Get Started',
                     ontap: () {
-                      print('${fauth.currentUser == null}');
                       Navigator.pushNamed(context, SignUpPage.id);
                     },
                     color: Colors.blue)

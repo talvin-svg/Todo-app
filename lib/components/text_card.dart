@@ -4,16 +4,16 @@ import 'package:todo_new/components/app_text.dart';
 enum TodoType { urgent, important, regular }
 
 class TextCard extends StatelessWidget {
-  const TextCard(
-      {Key? key,
-      required this.todoName,
-      required this.icon,
-      required this.ontapIcon,
-      this.time,
-      required this.iconSecondary,
-      required this.ontapIconSecondary,
-      required this.color})
-      : super(key: key);
+  const TextCard({
+    Key? key,
+    required this.todoName,
+    required this.icon,
+    required this.ontapIcon,
+    this.time,
+    required this.iconSecondary,
+    required this.ontapIconSecondary,
+    required this.color,
+  }) : super(key: key);
 
   final String? todoName;
   final String? time;

@@ -62,306 +62,300 @@ class _IntroScreenState extends State<IntroScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          leading: GestureDetector(
-              onTap: () {
-                signOut(context: context);
+      appBar: _appBar(context),
+      body: _body(context),
+      floatingActionButton: floatingButton(context),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+    );
+  }
+
+  Widget _body(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.teal,
+            Colors.indigo,
+          ],
+        ),
+      ),
+      child: StoreConnector<AppState, _ViewModel>(
+        onInit: (store) {
+          fetchUserTodos(store: store);
+        },
+        converter: (store) => _ViewModel(context: context, store: store),
+        builder: (context, vm) {
+          List<Item> items = vm.filteredByDay(weeks[selectedWeekIndex]);
+
+          return ListView(
+            children: [
+              header(context, vm),
+              tasksOrBoards(context, vm),
+              lineWidget(context),
+              boardsAndActive(context, vm.store),
+              const SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10),
+                child: Row(
+                  children: weekdays(context) ?? [],
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              (onTaskSelected) ? todoList(items, vm) : boardList(context, vm),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget boardList(BuildContext context, _ViewModel vm) {
+    return Column(
+      children: category.map((category) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: GestureDetector(
+            child: Container(
+              width: MediaQuery.of(context).size.width - 30,
+              height: 100,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Theme.of(context).colorScheme.secondary),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        iconCategorySelector(category),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        AppText(
+                          text: categoryStringSelector(category),
+                          color: Theme.of(context).colorScheme.onBackground,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        Expanded(child: Container()),
+                        const Icon(Icons.more_horiz_outlined),
+                        const SizedBox(
+                          width: 10,
+                        )
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      children: [
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        AppText(
+                            text: (onActiveSelected)
+                                ? '${vm.filteredByCategory(category).where((element) => element.done == false).length}'
+                                : '${vm.filteredByCategory(category).where((element) => element.done == true).length}'),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        AppText(
+                            text: (onActiveSelected)
+                                ? ('Active Tasks')
+                                : 'Completed Tasks')
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget todoList(List<Item> items, _ViewModel vm) {
+    return ListView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          final item = items[index];
+
+          return Padding(
+            padding: const EdgeInsets.all(1),
+            child: Dismissible(
+              direction: DismissDirection.endToStart,
+              resizeDuration: const Duration(seconds: 2),
+              background: const CustomDismissedContainer(
+                color: Colors.red,
+                icon: Icons.delete,
+                isDelete: true,
+              ),
+              onDismissed: (direction) {
+                setState(() {});
+                deleteTodo(
+                    item: item,
+                    loadingKey: deleteToodLoadingKey,
+                    context: context,
+                    store: vm.store,
+                    index: index);
+
+                previewSuccess(
+                    message: 'Todo was successfully deleted', context: context);
               },
-              child: const Icon(Icons.arrow_back_ios)),
-          actions: [
-            const CircleAvatar(
-              backgroundColor: Colors.black45,
-              child: Icon(
-                Icons.notifications,
+              key: PageStorageKey(item),
+              child: TodoManager(
+                onclick: () {
+                  showModalBottomSheet(
+                      constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height * 0.7),
+                      isScrollControlled: true,
+                      context: context,
+                      builder: (context) => SizedBox(
+                              child: ViewTodoScreen(
+                            item: item,
+                          )));
+                },
+                color: getBackColor(item.color!),
+                title: item.title!,
+                ontap: () {
+                  editor(context, vm.store, item);
+                },
+                details: item.details!,
+                dueDate: item.dueDate?.toIso8601String() ?? 'no time alloted',
+                categoryIcon: iconStringSelector(item.category!),
+                iconMore: Icon(
+                  Icons.more_horiz_rounded,
+                  color: Theme.of(context).colorScheme.onBackground,
+                ),
+                completed: (item.done == true) ? 'Completed' : null,
+              ),
+            ),
+          );
+        });
+  }
+
+  Widget header(BuildContext context, _ViewModel vm) {
+    return SizedBox(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(
+            height: 30,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: AppText(
+              text: morning ? 'Good Morning' : 'Good Evening',
+              color: Theme.of(context).colorScheme.onBackground,
+              fontSize: 50,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 2.0),
+            child: Row(
+              children: [
+                AppText(
+                    text: 'Today is $currentDay',
+                    fontSize: 15,
+                    color: Theme.of(context).colorScheme.onBackground),
+                Expanded(child: Container()),
+                AppText(
+                    text: (vm.complete() == 0)
+                        ? '0 %'
+                        : '${(vm.complete() / (vm.complete() + vm.notComplete()) * 100).round()}%',
+                    fontSize: 15,
+                    color: Theme.of(context).colorScheme.onBackground),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 8.0,
+              right: 8.0,
+            ),
+            child: Row(
+              children: [
+                AppText(
+                    text: getCurrentDate(),
+                    fontSize: 12,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onBackground
+                        .withOpacity(0.3)),
+                Expanded(child: Container()),
+                AppText(
+                    text: 'Completed Tasks',
+                    fontSize: 12,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onBackground
+                        .withOpacity(0.3)),
+              ],
+            ),
+          ),
+          const SizedBox(
+            height: 40,
+          ),
+        ],
+      ),
+    );
+  }
+
+  AppBar _appBar(BuildContext context) {
+    return AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        leading: GestureDetector(
+          onTap: () => signOut(context: context),
+          child: const Icon(Icons.arrow_back_ios),
+        ),
+        actions: [
+          const CircleAvatar(
+            backgroundColor: Colors.black45,
+            child: Icon(
+              Icons.notifications,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(
+            width: 5,
+          ),
+          CircleAvatar(
+            backgroundColor: Colors.black45,
+            child: GestureDetector(
+              onTap: () => _getTodoForm(context),
+              child: const Icon(
+                Icons.add,
                 color: Colors.white,
               ),
             ),
-            const SizedBox(
-              width: 5,
-            ),
-            CircleAvatar(
-              backgroundColor: Colors.black45,
-              child: GestureDetector(
-                onTap: () {
-                  showModalBottomSheet(
-                      constraints: BoxConstraints(
-                          maxHeight: MediaQuery.of(context).size.height * 0.9),
-                      isScrollControlled: true,
-                      backgroundColor: Colors.black,
-                      context: context,
-                      builder: (context) {
-                        return const TodoForm();
-                      });
-                },
-                child: const Icon(
-                  Icons.add,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            const SizedBox(
-              width: 5,
-            ),
-          ]),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.teal,
-              Colors.indigo,
-            ],
           ),
-        ),
-        child: StoreConnector<AppState, _ViewModel>(
-          onInit: (store) {
-            fetchUserTodos(store: store);
-          },
-          converter: (store) => _ViewModel(context: context, store: store),
-          builder: (context, vm) {
-            List<Item> items = vm.filteredByDay(weeks[selectedWeekIndex]);
-
-            return ListView(
-              children: [
-                const SizedBox(
-                  height: 30,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: AppText(
-                    text: morning ? 'Good Morning' : 'Good Evening',
-                    color: Theme.of(context).colorScheme.onBackground,
-                    fontSize: 50,
-                  ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 2.0),
-                  child: Row(
-                    children: [
-                      AppText(
-                          text: 'Today is $currentDay',
-                          fontSize: 15,
-                          color: Theme.of(context).colorScheme.onBackground),
-                      Expanded(child: Container()),
-                      AppText(
-                          text: (vm.complete() == 0)
-                              ? '0 %'
-                              : '${(vm.complete() / (vm.complete() + vm.notComplete()) * 100).round()}%',
-                          fontSize: 15,
-                          color: Theme.of(context).colorScheme.onBackground),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 8.0,
-                    right: 8.0,
-                  ),
-                  child: Row(
-                    children: [
-                      AppText(
-                          text: getCurrentDate(),
-                          fontSize: 12,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onBackground
-                              .withOpacity(0.3)),
-                      Expanded(child: Container()),
-                      AppText(
-                          text: 'Completed Tasks',
-                          fontSize: 12,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onBackground
-                              .withOpacity(0.3)),
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  height: 40,
-                ),
-                tasksOrBoards(context, vm),
-                lineWidget(context),
-                boardsAndActive(context, vm.store),
-                const SizedBox(
-                  height: 10,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10, right: 10),
-                  child: Row(
-                    children: weekdays(context) ?? [],
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                (onTaskSelected)
-                    ? ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: items.length,
-                        itemBuilder: (context, index) {
-                          final item = items[index];
-
-                          return Padding(
-                            padding: const EdgeInsets.all(1),
-                            child: Dismissible(
-                              direction: DismissDirection.endToStart,
-                              resizeDuration: const Duration(seconds: 2),
-                              background: const CustomDismissedContainer(
-                                color: Colors.red,
-                                icon: Icons.delete,
-                                isDelete: true,
-                              ),
-                              onDismissed: (direction) {
-                                setState(() {});
-                                deleteTodo(
-                                    item: item,
-                                    loadingKey: deleteToodLoadingKey,
-                                    context: context,
-                                    store: vm.store,
-                                    index: index);
-
-                                previewSuccess(
-                                    message: 'Todo was successfully deleted',
-                                    context: context);
-                              },
-                              key: PageStorageKey(item),
-                              child: TodoManager(
-                                onclick: () {
-                                  showModalBottomSheet(
-                                      constraints: BoxConstraints(
-                                          maxHeight: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.7),
-                                      isScrollControlled: true,
-                                      context: context,
-                                      builder: (context) => SizedBox(
-                                              child: ViewTodoScreen(
-                                            item: item,
-                                          )));
-                                },
-                                color: getBackColor(item.color!),
-                                title: item.title!,
-                                ontap: () {
-                                  editor(context, vm.store, item);
-                                },
-                                details: item.details!,
-                                dueDate: item.dueDate?.toIso8601String() ??
-                                    'no time alloted',
-                                categoryIcon:
-                                    iconStringSelector(item.category!),
-                                iconMore: Icon(
-                                  Icons.more_horiz_rounded,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onBackground,
-                                ),
-                                completed:
-                                    (item.done == true) ? 'Completed' : null,
-                              ),
-                            ),
-                          );
-                        })
-                    : Column(
-                        children: category.map((category) {
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: GestureDetector(
-                              child: Container(
-                                width: MediaQuery.of(context).size.width - 30,
-                                height: 100,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .secondary),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          iconCategorySelector(category),
-                                          const SizedBox(
-                                            width: 5,
-                                          ),
-                                          AppText(
-                                            text: categoryStringSelector(
-                                                category),
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onBackground,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          Expanded(child: Container()),
-                                          const Icon(Icons.more_horiz_outlined),
-                                          const SizedBox(
-                                            width: 10,
-                                          )
-                                        ],
-                                      ),
-                                      const SizedBox(
-                                        height: 20,
-                                      ),
-                                      Row(
-                                        children: [
-                                          const SizedBox(
-                                            width: 10,
-                                          ),
-                                          AppText(
-                                              text: (onActiveSelected)
-                                                  ? '${vm.filteredByCategory(category).where((element) => element.done == false).length}'
-                                                  : '${vm.filteredByCategory(category).where((element) => element.done == true).length}'),
-                                          const SizedBox(
-                                            width: 5,
-                                          ),
-                                          AppText(
-                                              text: (onActiveSelected)
-                                                  ? ('Active Tasks')
-                                                  : 'Completed Tasks')
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      )
-              ],
-            );
-          },
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-          backgroundColor: Theme.of(context).colorScheme.secondary,
-          child: Icon(
-            Icons.add,
-            color: Theme.of(context).colorScheme.onSecondary,
+          const SizedBox(
+            width: 5,
           ),
-          onPressed: () {
-            showModalBottomSheet(
-                constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height * 0.9),
-                isScrollControlled: true,
-                backgroundColor: Colors.black,
-                context: context,
-                builder: (context) {
-                  return const TodoForm();
-                });
-          }),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-    );
+        ]);
+  }
+
+  Future<dynamic> _getTodoForm(BuildContext context) {
+    return showModalBottomSheet(
+        constraints:
+            BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.9),
+        isScrollControlled: true,
+        backgroundColor: Colors.black,
+        context: context,
+        builder: (context) {
+          return const TodoForm();
+        });
   }
 
   Widget tasksOrBoards(BuildContext context, _ViewModel vm) {
@@ -369,58 +363,61 @@ class _IntroScreenState extends State<IntroScreen> {
       padding: const EdgeInsets.only(left: 8.0, right: 8.0),
       child: Row(
         children: [
-          Container(
-            width: 30,
-            decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onBackground,
-                borderRadius: BorderRadius.circular(10)),
-            child: Center(child: AppText(text: '${vm.notComplete()}')),
-          ),
+          _counter(context, vm, vm.notComplete().toString()),
           const SizedBox(width: 10),
-          GestureDetector(
-            onTap: () {
-              if (onTaskSelected == true) return;
+          _titlesWidget(
+              titleName: "Tasks",
+              context: context,
+              ontap: () {
+                if (onTaskSelected) return;
 
-              setState(() {
-                onTaskSelected = !onTaskSelected;
-              });
-            },
-            child: AppText(
-              text: "Tasks",
-              fontSize: 40,
-              fontWeight: FontWeight.w200,
-              color: onTaskSelected
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.onBackground,
-            ),
-          ),
+                setState(() {
+                  onTaskSelected = !onTaskSelected;
+                });
+              }),
           Expanded(child: Container()),
-          Container(
-            width: 30,
-            decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onBackground,
-                borderRadius: BorderRadius.circular(10)),
-            child: Center(child: AppText(text: category.length.toString())),
-          ),
+          _counter(context, vm, category.length.toString()),
           const SizedBox(width: 10),
-          GestureDetector(
-            onTap: () {
-              if (onTaskSelected == false) return;
+          _titlesWidget(
+              titleName: "Boards",
+              context: context,
+              ontap: () {
+                if (!onTaskSelected) return;
 
-              setState(() {
-                onTaskSelected = !onTaskSelected;
-              });
-            },
-            child: AppText(
-              text: "Boards",
-              fontSize: 40,
-              fontWeight: FontWeight.w200,
-              color: !onTaskSelected
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.onBackground,
-            ),
-          ),
+                setState(() {
+                  onTaskSelected = !onTaskSelected;
+                });
+              })
         ],
+      ),
+    );
+  }
+
+  GestureDetector _titlesWidget(
+      {required BuildContext context,
+      required void Function()? ontap,
+      required String titleName}) {
+    return GestureDetector(
+      onTap: ontap,
+      child: AppText(
+        text: titleName,
+        fontSize: 40,
+        fontWeight: FontWeight.w200,
+        color: onTaskSelected
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).colorScheme.onBackground,
+      ),
+    );
+  }
+
+  Widget _counter(BuildContext context, _ViewModel vm, String text) {
+    return Container(
+      width: 30,
+      decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.onBackground,
+          borderRadius: BorderRadius.circular(10)),
+      child: Center(
+        child: AppText(text: text),
       ),
     );
   }
@@ -455,79 +452,31 @@ class _IntroScreenState extends State<IntroScreen> {
 
   Widget boardsAndActive(BuildContext context, Store<AppState> store) {
     return Padding(
-      padding: const EdgeInsets.all(15),
+      padding: const EdgeInsets.all(15.0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 100,
-            height: 35,
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.white, width: 1),
-              borderRadius: BorderRadius.circular(20),
-              color: Theme.of(context).colorScheme.background,
-            ),
-            child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Theme.of(context).colorScheme.primary),
-                    width: 25,
-                    child: Center(
-                      child: AppText(
-                        text: category.length.toString(),
-                        color: Theme.of(context).colorScheme.onBackground,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 4),
-                AppText(
-                  text: 'Boards',
-                  color: Theme.of(context).colorScheme.onBackground,
-                )
-              ],
-            ),
-          ),
-          Expanded(child: Container()),
-          GestureDetector(
-            onTap: () {
-              if (onActiveSelected) {
-                return;
-              } else {
+          toggleButton(
+            context: context,
+            store: store,
+            isSelected: onActiveSelected,
+            title: 'Active',
+            ontap: () {
+              if (!onActiveSelected) {
                 setState(() {
                   onActiveSelected = !onActiveSelected;
                 });
-
                 showActiveTodo(
                     filter: ItemFilter.active, context: context, store: store);
               }
             },
-            child: Container(
-              width: 100,
-              height: 35,
-              decoration: BoxDecoration(
-                border: onActiveSelected
-                    ? null
-                    : Border.all(color: Colors.white, width: 1),
-                borderRadius: BorderRadius.circular(20),
-                color: (onActiveSelected)
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.background,
-              ),
-              child: Center(
-                child: AppText(
-                  text: 'Active',
-                  fontWeight: (onActiveSelected) ? FontWeight.bold : null,
-                  color: (onActiveSelected) ? Colors.black : Colors.white,
-                ),
-              ),
-            ),
           ),
-          GestureDetector(
-            onTap: () {
+          toggleButton(
+            context: context,
+            store: store,
+            isSelected: !onActiveSelected,
+            title: 'Done',
+            ontap: () {
               if (onActiveSelected) {
                 setState(() {
                   onActiveSelected = !onActiveSelected;
@@ -536,28 +485,38 @@ class _IntroScreenState extends State<IntroScreen> {
                     filter: ItemFilter.done, context: context, store: store);
               }
             },
-            child: Container(
-              width: 100,
-              height: 35,
-              decoration: BoxDecoration(
-                border: (onActiveSelected)
-                    ? Border.all(color: Colors.white, width: 1)
-                    : null,
-                borderRadius: BorderRadius.circular(20),
-                color: (onActiveSelected)
-                    ? Theme.of(context).colorScheme.background
-                    : Theme.of(context).colorScheme.primary,
-              ),
-              child: Center(
-                child: AppText(
-                  fontWeight: (onActiveSelected) ? null : FontWeight.bold,
-                  text: 'Done',
-                  color: (onActiveSelected) ? Colors.white : Colors.black,
-                ),
-              ),
-            ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget toggleButton({
+    required BuildContext context,
+    required Store<AppState> store,
+    required bool isSelected,
+    required String title,
+    required void Function()? ontap,
+  }) {
+    return GestureDetector(
+      onTap: ontap,
+      child: Container(
+        width: 100,
+        height: 35,
+        decoration: BoxDecoration(
+          border: isSelected ? null : Border.all(color: Colors.white, width: 1),
+          borderRadius: BorderRadius.circular(20),
+          color: (isSelected)
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.background,
+        ),
+        child: Center(
+          child: AppText(
+            text: title,
+            fontWeight: (isSelected) ? FontWeight.bold : null,
+            color: (isSelected) ? Colors.black : Colors.white,
+          ),
+        ),
       ),
     );
   }
@@ -590,6 +549,31 @@ class _IntroScreenState extends State<IntroScreen> {
     }
   }
 
+  FloatingActionButton floatingButton(BuildContext context) {
+    return FloatingActionButton(
+      backgroundColor: Theme.of(context).colorScheme.secondary,
+      child: Icon(
+        Icons.add,
+        color: Theme.of(context).colorScheme.onSecondary,
+      ),
+      onPressed: () {
+        onFloatingActionPressed(context);
+      },
+    );
+  }
+
+  Future<dynamic> onFloatingActionPressed(BuildContext context) {
+    return showModalBottomSheet(
+        constraints:
+            BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.9),
+        isScrollControlled: true,
+        backgroundColor: Colors.black,
+        context: context,
+        builder: (context) {
+          return const TodoForm();
+        });
+  }
+
   Future<dynamic> editor(
     BuildContext context,
     Store<AppState> store,
@@ -597,7 +581,6 @@ class _IntroScreenState extends State<IntroScreen> {
   ) {
     var actualIndex = store.state.itemListState.itemList.indexOf(item);
 
-    print(item.title);
     return showDialog(
         context: context,
         builder: ((context) {

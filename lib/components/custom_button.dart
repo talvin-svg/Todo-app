@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
@@ -16,15 +15,17 @@ class CustomButton extends StatelessWidget {
     return GestureDetector(
       onTap: ontap,
       child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10), color: color),
-          width: 100,
-          height: 50,
-          child: Center(
-              child: Text(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10), color: color),
+        width: 100,
+        height: 50,
+        child: Center(
+          child: Text(
             title,
             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
-          ))),
+          ),
+        ),
+      ),
     );
   }
 }

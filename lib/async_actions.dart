@@ -188,7 +188,6 @@ Future completeTodo(
   store.dispatch(StartLoadingAction(loadingKey: loadingKey));
 
   Item editItem = item.copyWith(done: true);
-  print(editItem.done);
   final dataItem = editItem.toMap();
 
   await Firestore.updateDocument(
@@ -198,8 +197,6 @@ Future completeTodo(
       docPath: editItem.id ?? '',
       data: dataItem);
   store.dispatch(ToggleItemSelection(index: index));
-  print('hit');
-  print(editItem.done);
 }
 
 void stopLoadingAction(

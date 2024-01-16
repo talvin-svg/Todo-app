@@ -32,25 +32,6 @@ class _TodoReviewState extends State<TodoReview> {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Row(
-                    children: [
-                      // Expanded(
-                      //   child: TodoManager(
-                      //       color: Colors.grey,
-                      //       title: 'In Progress ',
-                      //       icon: Icons.toys_sharp,
-                      //       text: '${vm.notComplete()}'),
-                      // ),
-                      // spaceHorizontal,
-                      // Expanded(
-                      //   child: TodoManager(
-                      //       color: Colors.green,
-                      //       title: 'Completed',
-                      //       icon: Icons.abc_outlined,
-                      //       text: '${vm.complete()}'),
-                      // ),
-                    ],
-                  ),
                   spaceVertical,
                   Row(
                     children: [

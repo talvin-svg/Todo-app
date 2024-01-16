@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         theme: dark,
         onUnknownRoute: (settings) => MaterialPageRoute(
-            settings: settings, builder: (context) => const WelcomeScreen()),
+            settings: settings, builder: (context) => const IntroScreen()),
         routes: {
           WelcomeScreen.id: (context) => const WelcomeScreen(),
           SignUpPage.id: (context) => const SignUpPage(),
