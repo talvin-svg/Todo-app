@@ -1,4 +1,4 @@
-##Todo App
+#Todo App
 Welcome to the Todo App repository! This project is a Flutter application designed to help you manage your tasks efficiently. Leveraging Redux for state management and Firebase for backend support, this app offers a seamless experience for organizing and tracking your todos.
 
 Features
